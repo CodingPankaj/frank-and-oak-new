@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import { CLOUDINARY_BASE_URL } from "../constants.js";
 
 // Configuration
 cloudinary.config({
@@ -31,7 +32,9 @@ export const uploadToCloudinary = async (
 };
 
 // delete file from cloudinary using public id
-export const deleteFileFromCloudinary = async (publicId) => {
+export const deleteFileFromCloudinary = async (imageUrl) => {
+  const publicId = imageUrl.replace(CLOUDINARY_BASE_URL, "").split(".")[0];
+
   try {
     if (!publicId) return null;
 

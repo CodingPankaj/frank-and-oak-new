@@ -2,7 +2,7 @@ import { MdNotificationsNone, MdOutlineMenu } from "react-icons/md";
 import { DarkMode } from "../components/DarkMode";
 import { MainContext } from "../context/MainContext";
 import { useContext } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 export const Header = () => {

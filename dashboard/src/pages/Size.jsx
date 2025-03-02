@@ -19,17 +19,28 @@ import { Loader } from "../components/Loader";
 import { RadioStatusButton } from "../components/RadioStatusButton";
 import { fetchApiData } from "../services/fetchApiData";
 import { toastError, toastSuccess, toastWarn } from "../utils/tostifytoast";
+import { InputField } from "../components/InputField";
+import { getInputValue } from "../utils/getInputValue";
+import { deleteSingleData } from "../services/deleteSingleData";
 
 export const Size = () => {
   const [loading, setLoading] = useState(false);
   const [allSizes, setAllSizes] = useState([]);
   const [radioBtnStatus, setRadioBtnStatus] = useState(true);
-  const [emptyFieldError, SetEmptyFieldError] = useState(false);
+  const [inputFieldNameError, setInputFieldNameError] = useState(false);
 
   const [formData, setFormData] = useState({
+    _id: "",
     sizeName: "",
     sizeStatus: true,
   });
+
+  // empty form data
+  const emptyFormData = {
+    _id: "",
+    sizeName: "",
+    sizeStatus: true,
+  };
 
   useEffect(() => {
     const newFormData = { ...formData };
@@ -37,11 +48,11 @@ export const Size = () => {
     setFormData(newFormData);
   }, [radioBtnStatus]);
 
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
-
   // Get all sizes from database
   const getAllSizes = async () => {
-    const res = await fetchApiData(`${apiBaseUrl}admin/size/view`);
+    const res = await fetchApiData(
+      `${import.meta.env.VITE_API_BASE_URL}admin/size/view`,
+    );
     setAllSizes(res.data);
   };
 
@@ -51,69 +62,70 @@ export const Size = () => {
   }, []);
 
   // Get data from input fields
-  const getInputValue = (event) => {
-    const { name, value } = event.target;
-    const newFormData = { ...formData };
-    newFormData[name] = value;
-    setFormData(newFormData);
+  const handleChange = (e) => {
+    getInputValue(e, setFormData);
   };
 
   // Form Submit
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    const { sizeName, sizeStatus } = formData;
+    const { sizeName, sizeStatus, _id } = formData;
     // Empty Size Name
     if (!sizeName) {
-      SetEmptyFieldError(true);
+      setInputFieldNameError(true);
       return toastError("Size Name Cannot Be Empty");
     }
 
-    // // Duplicate Size Name
-    // const duplicateSizeName = allSizes.some(
-    //   (item) => item.sizeName === sizeName,
-    // );
+    // Duplicate Size Name
+    const duplicateSizeName = allSizes.some(
+      (item) => item.sizeName === sizeName,
+    );
 
-    // if (duplicateSizeName && id === "") {
-    //   return toastWarn();
-    // }
+    if (duplicateSizeName && _id === "") {
+      return toastWarn("Duplicate size name");
+    }
 
     setLoading(true);
     // Add Size Name to Database
     try {
-      const res = await axios.post(`${apiBaseUrl}admin/size/add`, formData, {
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}admin/size/add`,
+        formData,
+        {
+          withCredentials: true,
+        },
+      );
 
+      // get all sizes
       getAllSizes();
-      setFormData((prevData) => ({ ...prevData, sizeName: "" }));
+
+      // Empty input fields
+      setFormData(emptyFormData);
+
+      // set radio button ture
       setRadioBtnStatus(true);
-      toastSuccess("Size Added");
-      SetEmptyFieldError(false);
+
+      // set input fields error to false
+      setInputFieldNameError(false);
+
+      // set button loading false
       setLoading(false);
+
+      // show toast notification
+      toastSuccess("Size Added");
       return;
     } catch (error) {
-      console.log(error.message);
-      toastError((message = error.message));
+      console.log(error?.message);
+      toastError("Failed to add size");
       setLoading(false);
     }
   };
 
   // Delete Size
   const handleSizeDelete = async (id) => {
-    const isConfirmed = window.confirm("Are you sure, you want to delete?");
-
-    if (isConfirmed) {
-      try {
-        const res = await axios.delete(`${apiBaseUrl}admin/size/delete/${id}`, {
-          withCredentials: true,
-        });
-        getAllSizes();
-        toastError();
-      } catch (error) {
-        console.log(error.message);
-      }
-    }
+    const deleteUrl = `${import.meta.env.VITE_API_BASE_URL}admin/size/delete/${id}`;
+    await deleteSingleData(deleteUrl, getAllSizes);
   };
 
   const [bulkDeleteItemId, setBulkDeleteItemId] = useState([]);
@@ -121,9 +133,12 @@ export const Size = () => {
   // Bulk Delete
   const handleBulkDelete = async () => {
     try {
-      const res = await axios.delete(`${apiBaseUrl}admin/size/delete`, {
-        data: bulkDeleteItemId,
-      });
+      const res = await axios.delete(
+        `${import.meta.env.VITE_API_BASE_URL}admin/size/delete`,
+        {
+          data: bulkDeleteItemId,
+        },
+      );
       setBulkDeleteItemId([]);
     } catch (error) {
       console.log(error.message);
@@ -148,24 +163,18 @@ export const Size = () => {
           <CardTop heading="Add Size" headingStyle="text-sm" />
           <form onSubmit={handleFormSubmit}>
             <div className="pb-3 pt-2">
-              <div className="product-input-container">
-                <label htmlFor="size-name" className="add-product-label">
-                  Size Name
-                </label>
-                <input
-                  type="text"
-                  id="size-name"
-                  name="sizeName"
-                  placeholder="Enter Size Name"
-                  className="product-input"
-                  style={{ borderColor: emptyFieldError ? "#ef4444" : "" }}
-                  onChange={getInputValue}
-                  value={formData.sizeName}
-                />
-                {emptyFieldError && (
-                  <p className="text-[11px] text-red-500">Enter size name</p>
-                )}
-              </div>
+              {/* Size Name */}
+
+              <InputField
+                label="Size Name"
+                type="text"
+                id="size-name"
+                name="sizeName"
+                onChange={handleChange}
+                value={formData.sizeName}
+                setInputFieldError={inputFieldNameError}
+                placeholder="Enter Size Name"
+              />
 
               {/* Size Status */}
               <RadioStatusButton
@@ -265,7 +274,7 @@ const SizeList = ({
                 ...prevData,
                 sizeName: sizeName,
                 sizeStatus: sizeStatus,
-                id: _id,
+                _id,
               }))
             }
           />

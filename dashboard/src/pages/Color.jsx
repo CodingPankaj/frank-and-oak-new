@@ -1,5 +1,4 @@
 import { CardTop } from "../components/CardTop";
-import { LinkBtnOne } from "../components/LinkBtnOne";
 import { MainCardContainer } from "../components/MainCardCointainer";
 import { MainSection } from "../components/MainSection";
 import { SearchInput } from "../components/SearchInput";
@@ -17,6 +16,7 @@ import { SubmitBtn } from "../components/SubmitBtn";
 import axios from "axios";
 import { toastError, toastSuccess } from "../utils/tostifytoast";
 import { fetchApiData } from "../services/fetchApiData";
+import { getInputValue } from "../utils/getInputValue";
 
 export const Color = () => {
   // store all color
@@ -24,12 +24,14 @@ export const Color = () => {
 
   // form data
   const [formData, setFormData] = useState({
+    _id: "",
     colorName: "",
     colorValue: "",
   });
 
   // empty data for form to empty input field
   const emptyData = {
+    _id: "",
     colorName: "",
     colorValue: "",
   };
@@ -47,7 +49,6 @@ export const Color = () => {
       `${import.meta.env.VITE_API_BASE_URL}admin/color/view`,
     );
     setAllColors(res.data);
-    console.log(res);
   };
 
   useEffect(() => {
@@ -56,37 +57,37 @@ export const Color = () => {
 
   // handle change
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    const newFormData = { ...formData };
-    newFormData[name] = value;
-    setFormData(newFormData);
+    getInputValue(e, setFormData);
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
     const { colorName, colorValue } = formData;
+
+    // check if color name is empty
+    if (!colorName) {
+      setInputFieldNameError(true);
+      return toastError("Color name cannot be empty");
+    }
+
+    // check if color value is empty
+    if (!colorValue) {
+      setInputFieldValueError(true);
+      return toastError("Color value cannot be empty");
+    }
+
+    // set submit button status true
+    setSubmitBtnLoader(true);
+
     try {
-      if (!colorName) {
-        setInputFieldNameError(true);
-        return toastError("Color Name Cannot Be Empty");
-      }
-
-      if (!colorValue) {
-        setInputFieldValueError(true);
-        return toastError("Color Value Cannot Be Empty");
-      }
-
-      setSubmitBtnLoader(true);
-
+      // send form data to api
       const res = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/admin/color/add`,
         formData,
         { withCredentials: true },
       );
 
-      console.log(res);
-      toastSuccess("New Color Added");
+      toastSuccess("New color added");
       getAllColors();
       setSubmitBtnLoader(false);
       setInputFieldValueError(false);
@@ -139,7 +140,10 @@ export const Color = () => {
 
               {/* Submit Button */}
               <div className="mb-4 mt-4 flex items-center justify-center gap-4">
-                <SubmitBtn label="Add Size" submitBtnLoader={submitBtnLoader} />
+                <SubmitBtn
+                  label="Add Color"
+                  submitBtnLoader={submitBtnLoader}
+                />
               </div>
             </div>
           </form>

@@ -12,8 +12,6 @@ export const Login = () => {
   const { setIsLoggedin } = useContext(MainContext);
 
   const navigate = useNavigate();
-  const location = useLocation();
-  console.log(location);
 
   // authenticate with access token
   const authenticateUser = async () => {

@@ -5,27 +5,39 @@ import { MainCardContainer } from "../MainCardCointainer";
 import { SelectBox } from "../SelectBox";
 import { SelectBoxOptions } from "../SelectBoxOptions";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
 import { MdClose } from "react-icons/md";
 import { RadioStatusButton } from "../RadioStatusButton";
+import { InputField } from "../InputField";
+import { getInputValue } from "../../utils/getInputValue";
+import { SubmitBtn } from "../../components/SubmitBtn";
+import { toastError, toastSuccess } from "../../utils/tostifytoast";
 
-export const AddCategoryForm = ({ getCategory, categoryData }) => {
-  const [radioBtnStatus, setRadioBtnStatus] = useState(true);
+export const AddCategoryForm = ({
+  getCategory,
+  categoryData,
+  inputData,
+  setInputData,
+  imageUrl,
+  setImageUrl,
+  oldCategoryData,
+  setOldCategoryData,
+}) => {
   const [categoryImage, setCategoryImage] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [inputFieldNameError, setInputFieldNameError] = useState(false);
+  const [submitBtnLoader, setSubmitBtnLoader] = useState(false);
+  const [radioBtnStatus, setRadioBtnStatus] = useState(true);
 
-  const [inputData, setInputData] = useState({
+  // const empty form data
+  const emptyFormData = {
+    _id: "",
     categoryName: "",
     categoryDescription: "",
     categoryType: "parent-category",
-  });
+  };
 
   // handle input change
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    const newInputData = { ...inputData };
-    newInputData[name] = value;
-    setInputData(newInputData);
+    getInputValue(e, setInputData);
   };
 
   // handle file
@@ -37,37 +49,99 @@ export const AddCategoryForm = ({ getCategory, categoryData }) => {
   // handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { categoryName, categoryDescription, categoryType, _id } = inputData;
+
+    if (!categoryName) {
+      setInputFieldNameError(true);
+      return toastError("category name cannot be empty");
+    }
+
+    // create form data and append fields
     const formData = new FormData();
-    formData.append("categoryName", inputData.categoryName);
-    formData.append("categoryDescription", inputData.categoryDescription);
-    formData.append("categoryStatus", radioBtnStatus);
-    formData.append("categoryImage", categoryImage);
 
+    // If _id is present, then update the existing category
+    if (_id) {
+      // If the category name has changed, then append the new category name to formData
+      if (oldCategoryData.categoryName !== categoryName) {
+        formData.append("categoryName", categoryName);
+      }
+
+      // If the category description has changed, then append the new category description to formData
+      if (oldCategoryData.categoryDescription !== categoryDescription) {
+        formData.append("categoryDescription", categoryDescription);
+      }
+
+      // If the category status has changed, then append the new category status to formData
+      if (oldCategoryData.categoryStatus !== radioBtnStatus) {
+        formData.append("categoryStatus", radioBtnStatus);
+      }
+
+      // If the category image has changed, then append the new category image to formData
+      if (oldCategoryData.categoryImage !== imageUrl) {
+        formData.append("categoryImage", categoryImage);
+      }
+
+      // check if form data is empty
+      const isFormDataEmpty = formData.entries().next().done;
+
+      if (isFormDataEmpty) {
+        return toastError("Make any changes to update category");
+      }
+
+      // append _id to form data
+      formData.append("_id", _id);
+    }
+
+    // If _id is not  present, then add new category
+    if (!_id) {
+      formData.append("categoryName", inputData.categoryName);
+      formData.append("categoryDescription", inputData.categoryDescription);
+      formData.append("categoryStatus", radioBtnStatus);
+      if (!categoryImage) {
+        return toastError("Category image is required");
+      }
+      formData.append("categoryImage", categoryImage);
+    }
+
+    // set button loader and disable submit button
+    setSubmitBtnLoader(true);
+
+    // change api end point for parent category and sub category
     const apiEndpoint =
-      inputData.categoryType === "parent-category" ||
-      inputData.categoryType === ""
+      Object.keys(oldCategoryData).length === 0
         ? "admin/category/add"
-        : "admin/subcategory/add";
+        : `admin/category/update`;
 
+    const apiMethod =
+      Object.keys(oldCategoryData).length === 0 ? "post" : "patch";
+
+    // send data to server
     try {
-      const res = await axios.post(
+      const res = await axios[apiMethod](
         `${import.meta.env.VITE_API_BASE_URL}${apiEndpoint}`,
         formData,
         {
           headers: {
-            "Content-Type": "'multipart/form-data'",
+            "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
         },
       );
 
       if (res.status === 200) {
-        toast.success("New Category Added");
+        toastSuccess(_id ? "Category Updated" : "New Category Added");
+        setInputData(emptyFormData);
+        setOldCategoryData({});
+        setImageUrl("");
+        setInputFieldNameError(false);
+        setRadioBtnStatus(true);
+        setSubmitBtnLoader(false);
+        getCategory();
       }
-
-      getCategory();
     } catch (error) {
-      toast.error("Failed to add product");
+      toastError("Failed to add product");
+      setSubmitBtnLoader(false);
       console.log(error);
     }
   };
@@ -77,20 +151,16 @@ export const AddCategoryForm = ({ getCategory, categoryData }) => {
       <form onSubmit={handleSubmit} className="pb-10">
         {/* Category Name Input */}
         <div className="pb-3 pt-2">
-          <div className="product-input-container">
-            <label htmlFor="category-name" className="add-product-label">
-              Category Name
-            </label>
-            <input
-              type="text"
-              onChange={handleChange}
-              value={inputData.categoryName}
-              id="category-name"
-              name="categoryName"
-              placeholder="Enter Category Name"
-              className="product-input"
-            />
-          </div>
+          <InputField
+            label="Category Name"
+            type="text"
+            id="category-name"
+            name="categoryName"
+            onChange={handleChange}
+            value={inputData.categoryName}
+            setInputFieldError={inputFieldNameError}
+            placeholder="Enter Category Name"
+          />
         </div>
 
         {/* Category Image Input */}
@@ -131,16 +201,19 @@ export const AddCategoryForm = ({ getCategory, categoryData }) => {
 
         {/* Category Type Dropdown */}
         <div className="product-input-container">
-          <label htmlFor="category-type" className="add-product-label">
-            Type
-          </label>
+          <span htmlFor="category-type" className="add-product-label">
+            Parent Category
+          </span>
           <SelectBox
             id="category-type"
             className="product-select-box"
             name="categoryType"
             onChange={handleChange}
           >
-            <SelectBoxOptions value="parent-category" label="Parent Category" />
+            <SelectBoxOptions
+              value="parent-category"
+              label="Select Parent Category"
+            />
             {categoryData &&
               categoryData.length > 0 &&
               categoryData.map((item, index) => (
@@ -150,9 +223,6 @@ export const AddCategoryForm = ({ getCategory, categoryData }) => {
                   label={item.categoryName}
                 />
               ))}
-            {/* <SelectBoxOptions value="mens-clothing" label="Mens Clothing" />
-            <SelectBoxOptions value="womens-clothing" label="Womens Clothing" />
-            <SelectBoxOptions value="footwear" label="Footwear" /> */}
           </SelectBox>
         </div>
 
@@ -180,10 +250,9 @@ export const AddCategoryForm = ({ getCategory, categoryData }) => {
         {/* Action Buttons */}
         <div className="mt-4 flex items-center justify-center gap-4">
           <LinkBtnTwo>Save Draft</LinkBtnTwo>
-          <button className="primary-btn">Publish</button>
+          <SubmitBtn label="Add Size" submitBtnLoader={submitBtnLoader} />
         </div>
       </form>
-      <ToastContainer />
     </MainCardContainer>
   );
 };
