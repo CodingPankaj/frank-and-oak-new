@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "value": "male",
+        "label": "Male"
+    },
+    {
+        "id": 2,
+        "value": "female",
+        "label": "Female"
+    },
+    {
+        "id": 3,
+        "value": "unisex",
+        "label": "Unisex"
+    },
+    {
+        "id": 4,
+        "value": "na",
+        "label": "NA (Not Applicable)"
+    }
+]

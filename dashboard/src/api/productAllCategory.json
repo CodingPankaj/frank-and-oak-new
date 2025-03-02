@@ -1,0 +1,110 @@
+[
+    {
+        "id": 1,
+        "category_id": 1,
+        "value": "men-clothing",
+        "label": "Men's Clothing",
+        "image": "/images/1.jpg",
+        "type": "parent category",
+        "slug": "mens-clothing"
+    },
+    {
+        "id": 2,
+        "category_id": 2,
+        "value": "women-clothing",
+        "label": "Women's Clothing",
+        "image": "/images/2.jpg",
+        "type": "parent category",
+        "slug": "womens-clothing"
+    },
+    {
+        "id": 3,
+        "category_id": 3,
+        "value": "footwear",
+        "label": "Footwear",
+        "image": "/images/3.jpg",
+        "type": "parent category",
+        "slug": "footwear"
+    },
+    {
+        "id": 4,
+        "category_id": 4,
+        "value": "accessories",
+        "label": "Accessories",
+        "image": "/images/4.jpg",
+        "type": "parent category",
+        "slug": "accessories"
+    },
+    {
+        "id": 5,
+        "category_id": 5,
+        "value": "sportswear",
+        "label": "Sportswear",
+        "image": "/images/5.jpg",
+        "type": "parent category",
+        "slug": "sportswear"
+    },
+    {
+        "id": 6,
+        "category_id": 6,
+        "value": "electronics",
+        "label": "Electronics",
+        "image": "/images/6.jpg",
+        "type": "parent category",
+        "slug": "electronics"
+    },
+    {
+        "id": 7,
+        "category_id": 7,
+        "value": "t-shirts",
+        "label": "T-Shirts",
+        "image": "/images/7.jpg",
+        "type": "sub category",
+        "slug": "t-shirts"
+    },
+    {
+        "id": 8,
+        "category_id": 7,
+        "value": "jeans",
+        "label": "Jeans",
+        "image": "/images/1.jpg",
+        "type": "sub category",
+        "slug": "jeans"
+    },
+    {
+        "id": 9,
+        "category_id": 8,
+        "value": "dresses",
+        "label": "Dresses",
+        "image": "/images/2.jpg",
+        "type": "sub category",
+        "slug": "dresses"
+    },
+    {
+        "id": 10,
+        "category_id": 8,
+        "value": "skirts",
+        "label": "Skirts",
+        "image": "/images/3.jpg",
+        "type": "sub category",
+        "slug": "skirts"
+    },
+    {
+        "id": 11,
+        "category_id": 9,
+        "value": "sneakers",
+        "label": "Sneakers",
+        "image": "/images/4.jpg",
+        "type": "sub category",
+        "slug": "sneakers"
+    },
+    {
+        "id": 12,
+        "category_id": 9,
+        "value": "sandals",
+        "label": "Sandals",
+        "image": "/images/5.jpg",
+        "type": "sub category",
+        "slug": "sandals"
+    }
+]

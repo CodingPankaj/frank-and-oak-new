@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "value": "men-clothing",
+        "label": "Men's Clothing"
+    },
+    {
+        "id": 2,
+        "value": "women-clothing",
+        "label": "Women's Clothing"
+    },
+    {
+        "id": 3,
+        "value": "footwear",
+        "label": "Footwear"
+    },
+    {
+        "id": 4,
+        "value": "accessories",
+        "label": "Accessories"
+    },
+    {
+        "id": 5,
+        "value": "sportswear",
+        "label": "Sportswear"
+    },
+    {
+        "id": 6,
+        "value": "electronics",
+        "label": "Electronics"
+    }
+]

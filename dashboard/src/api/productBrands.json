@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "value": "nike",
+        "label": "Nike"
+    },
+    {
+        "id": 2,
+        "value": "adidas",
+        "label": "Adidas"
+    },
+    {
+        "id": 3,
+        "value": "puma",
+        "label": "Puma"
+    },
+    {
+        "id": 4,
+        "value": "under-armour",
+        "label": "Under Armour"
+    },
+    {
+        "id": 5,
+        "value": "reebok",
+        "label": "Reebok"
+    },
+    {
+        "id": 6,
+        "value": "new-balance",
+        "label": "New Balance"
+    }
+]

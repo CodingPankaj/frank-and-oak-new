@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+@theme {
+  --font-dm-sans: var(--font-dm-sans);
+  --font-circularStd: "circularStd", "sans-serif";
+  --font-circularItalic: "circularItalic", "sans-serif";
+  --font-circularBold: "circularBold", "sans-serif";
+  --color-cirmson: rgba(var(--cirmson));
+  --color-gray: rgba(var(--gray));
+  --color-light-gray: rgba(var(--light-gray));
+  --color-olive-dark-green: rgba(var(--olive-dark-green));
+}
+
+:root {
+  --gray: 128, 128, 128;
+  --light-gray: 235, 236, 237;
+  --cirmson: 237, 46, 0;
+  --olive-dark-green: 39, 41, 34;
+}
+
+/* Newsletter radio start */
+
+.newsletter-radio-container {
+  @apply flex items-center;
+}
+
+.newsletter-radio {
+  @apply hidden;
+}
+
+.newsletter-label {
+  @apply relative pl-6;
+}
+
+.newsletter-label::before {
+  @apply absolute top-2/4 left-0 size-4 -translate-y-2/4 rounded-full border border-white content-[""];
+}
+
+.newsletter-radio:checked + .newsletter-label::before {
+  @apply border-4 border-black bg-white;
+}
+
+.newsletter-radio:checked + .newsletter-label::after {
+  @apply absolute top-2/4 left-0 size-4 -translate-y-2/4 rounded-full border border-white content-[""];
+}
+
+/* Newsletter radio end */
+
+/* Login input form start */
+
+.login-form-input {
+  @apply flex h-[45px] w-full items-center border-[1px] border-[#999] px-[15px] transition-all outline-none;
+}
+
+.login-form-input:focus {
+  @apply border-black outline-none;
+}
+
+.login-form-input::placeholder {
+  @apply text-[#757575];
+}
+/* Login input form end */
+
+/* Radio container black start */
+
+.radio-input-black {
+  @apply hidden;
+}
+
+.radio-input-label-black {
+  @apply relative pl-6;
+}
+
+.radio-input-label-black::before {
+  @apply absolute top-2/4 left-0 size-4 -translate-y-2/4 rounded-full border border-black content-[""];
+}
+
+.radio-input-black:checked + .radio-input-label-black::before {
+  @apply border-4 border-white bg-black;
+}
+
+.radio-input-black:checked + .radio-input-label-black::after {
+  @apply absolute top-2/4 left-0 size-4 -translate-y-2/4 rounded-full border border-black content-[""];
+}
+
+/* Radio container black end */
+
+/* Siper Js */
+.swiper-button-next,
+.swiper-button-prev {
+  display: flex;
+}
+
+.swiper-button-prev {
+  left: 0;
+}
+
+.swiper-button-next {
+  right: 0;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 12px !important;
+  font-weight: 800;
+  color: black !important;
+}
+
+.swiper-pagination-bullet {
+  margin: 0 2px !important;
+}
+
+.swiper-pagination-bullet-active {
+  width: 4px !important;
+  height: 4px !important;
+  background-color: black !important;
+}
+.swiper-pagination-bullet {
+  width: 4px !important;
+  height: 4px !important;
+}
+
+.swiper-pagination.swiper-pagination-clickable.swiper-pagination-bullets.swiper-pagination-horizontal {
+  margin: 0 10px;
+  display: flex;
+}

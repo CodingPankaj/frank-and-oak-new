@@ -1,0 +1,65 @@
+[
+    {
+        "title": "Total Orders",
+        "timePeriod": "today",
+        "thisMonth": "+4",
+        "thisYear": "+10%",
+        "number": 15432
+    },
+    {
+        "title": "Total Sales",
+        "timePeriod": "today",
+        "thisMonth": "+2",
+        "thisYear": "+5%",
+        "number": 235412
+    },
+    {
+        "title": "Average Order Value",
+        "timePeriod": "today",
+        "thisMonth": "+1.5",
+        "thisYear": "+3%",
+        "number": 15.23
+    },
+    {
+        "title": "Total Customers",
+        "timePeriod": "today",
+        "thisMonth": "+3.2",
+        "thisYear": "+8%",
+        "number": 8932
+    },
+    {
+        "title": "New Customers",
+        "timePeriod": "today",
+        "thisMonth": "+6",
+        "thisYear": "+12%",
+        "number": 132
+    },
+    {
+        "title": "Total Revenue",
+        "timePeriod": "today",
+        "thisMonth": "-0.5",
+        "thisYear": "+3.5%",
+        "number": 560000
+    },
+    {
+        "title": "Total Returns",
+        "timePeriod": "today",
+        "thisMonth": "-1",
+        "thisYear": "-5%",
+        "number": 432
+    },
+    {
+        "title": "Cart Abandonment Rate",
+        "timePeriod": "today",
+        "thisMonth": "-0.5",
+        "thisYear": "-2%",
+        "number": 69.5
+    },
+    {
+        "title": "Top Product Sold",
+        "timePeriod": "today",
+        "thisMonth": "+15",
+        "thisYear": "+20%",
+        "number": "Wireless Headphones"
+    }
+]

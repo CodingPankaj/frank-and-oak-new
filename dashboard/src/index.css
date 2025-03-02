@@ -1,0 +1,166 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Defalut Colors */
+:root {
+  --accent-color: 114, 92, 255;
+}
+
+/* Light Mode Colors */
+:root[data-theme="light"] {
+  --bg-primary-color: 255, 255, 255;
+  --bg-secondary-color: 245, 246, 250;
+  --bg-color-3: 247, 248, 250;
+  --bg-light-color: 247, 248, 250;
+  --text-primary-color: 34, 47, 54;
+  --text-secondary-color: 151, 164, 194;
+  --text-color-3: 10, 10, 10;
+  --text-color-4: 34, 47, 54;
+  --icon-color: 97, 116, 143;
+  --border-color: 230, 240, 242;
+  --border-color-2: 244, 242, 250;
+  --border-color-3: 0, 0, 0;
+  --toastify-color-light: #fff;
+  --toastify-close-btn-color: #000;
+}
+
+/* Dark Mode Colors */
+:root[data-theme="dark"] {
+  --bg-primary-color: 35, 34, 38;
+  --bg-secondary-color: 24, 23, 26;
+  --bg-color-3: 47, 46, 51;
+  --bg-light-color: 46, 45, 50;
+  --text-primary-color: 212, 212, 212;
+  --text-secondary-color: 146, 146, 148;
+  --text-color-3: 240, 245, 248;
+  --text-color-4: 214, 214, 214;
+  --icon-color: 167, 167, 168;
+  --border-color: 58, 58, 61;
+  --border-color-2: 61, 60, 64;
+  --border-color-3: 255, 255, 255;
+  --toastify-color-light: #121212;
+  --toastify-close-btn-color: #fff;
+}
+
+body {
+  background-color: rgb(var(--bg-secondary-color));
+  font-family: "Quicksand", serif;
+}
+
+.background-color {
+  background-color: rgb(var(--bg-primary-color));
+}
+
+.dashboard-btn-primary {
+  @apply flex items-center rounded border border-accent-color px-5 py-1 text-xs text-accent-color hover:bg-accent-color hover:text-text-primary-color;
+}
+.dashboard-btn-secondary {
+  @apply flex items-center rounded border border-accent-color bg-accent-color px-5 py-1 text-xs text-text-primary-color hover:bg-accent-color;
+}
+
+.select {
+  @apply relative appearance-none rounded border bg-transparent text-text-primary-color outline-none;
+}
+
+.sort-select-box {
+  @apply w-fit border-accent-color py-[2px] pl-2 pr-8 text-sm;
+}
+
+.product-select-box {
+  @apply w-full border-border-color py-[6px] pl-4 pr-10 text-[13px];
+}
+
+.option {
+  @apply appearance-none bg-bg-primary-color text-sm text-text-secondary-color;
+}
+
+.scrollbar::-webkit-scrollbar {
+  height: 3px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background-color: rgb(var(--bg-primary-color));
+  border-radius: 4px;
+  background: rgb(var(--icon-color));
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--accent-color));
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.chkbox {
+  @apply size-[14px] cursor-pointer appearance-none rounded border border-border-color;
+}
+
+.chkbox:checked {
+  @apply bg-accent-color bg-[url('/images/tick.svg')] bg-center;
+}
+
+.product-input-container {
+  @apply flex flex-col gap-2 px-4 py-2;
+}
+
+.product-input {
+  @apply rounded border border-border-color bg-transparent px-3 py-[6px] text-[13px] font-medium text-text-color-3 outline-none placeholder:text-text-secondary-color;
+}
+
+.radio-container {
+  @apply flex justify-between rounded border border-border-color px-4 py-2;
+}
+
+.radio-container:has(.input-radio:checked) {
+  @apply border-accent-color/60 bg-accent-color/10;
+}
+
+.input-radio {
+  @apply relative size-[15px] cursor-pointer appearance-none rounded-full border border-border-color outline-none;
+}
+
+.input-radio:checked {
+  @apply border-accent-color bg-accent-color bg-[url('/images/dot.svg')];
+}
+
+.add-product-label {
+  @apply text-[13px] font-semibold text-text-primary-color;
+}
+
+.primary-btn {
+  @apply flex items-center gap-2 rounded border border-accent-color bg-accent-color px-[10px] py-[5px] text-[13px] font-medium text-white;
+}
+
+/* Siper Js */
+.swiper-button-next,
+.swiper-button-prev {
+  display: flex;
+}
+
+.swiper-button-prev {
+  left: 0;
+}
+
+.swiper-button-next {
+  right: 0;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 16px !important;
+  font-weight: 800;
+  color: black !important;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: rgb(var(--accent-color)) !important;
+}
+
+.Toastify__close-button--light {
+  color: var(--toastify-close-btn-color);
+}

@@ -1,0 +1,51 @@
+[
+    {
+        "productName": "Sofa Chairs",
+        "category": "Home Decor",
+        "price": 49.00,
+        "totalSales": 15064,
+        "image": "images/1.jpg"
+    },
+    {
+        "productName": "Sneakers",
+        "category": "Fashion",
+        "price": 799.00,
+        "totalSales": 14862,
+        "image": "images/2.jpg"
+    },
+    {
+        "productName": "Luggage Bags",
+        "category": "Essentials",
+        "price": 99.00,
+        "totalSales": 20124,
+        "image": "images/3.jpg"
+    },
+    {
+        "productName": "Sun Glasses",
+        "category": "Fashion",
+        "price": 320.00,
+        "totalSales": 18673,
+        "image": "images/4.jpg"
+    },
+    {
+        "productName": "Refrigerator",
+        "category": "Electronics",
+        "price": 1299.00,
+        "totalSales": 15233,
+        "image": "images/5.jpg"
+    },
+    {
+        "productName": "Workon Clock",
+        "category": "Clocks",
+        "price": 249.00,
+        "totalSales": 12451,
+        "image": "images/6.jpg"
+    },
+    {
+        "productName": "Dizo Digital Camera",
+        "category": "Gadgets",
+        "price": 1499.00,
+        "totalSales": 9754,
+        "image": "images/7.jpg"
+    }
+]

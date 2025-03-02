@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Delivered",
+        "currentMonthCount": 120,
+        "lastMonthCount": 110
+    },
+    {
+        "name": "Pending",
+        "currentMonthCount": 50,
+        "lastMonthCount": 60
+    },
+    {
+        "name": "Cancelled",
+        "currentMonthCount": 15,
+        "lastMonthCount": 10
+    },
+    {
+        "name": "Returned",
+        "currentMonthCount": 8,
+        "lastMonthCount": 12
+    },
+    {
+        "name": "Shipped",
+        "currentMonthCount": 80,
+        "lastMonthCount": 90
+    }
+]
