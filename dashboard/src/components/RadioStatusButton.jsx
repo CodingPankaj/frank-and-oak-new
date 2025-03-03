@@ -1,8 +1,12 @@
-export const RadioStatusButton = ({ radioBtnStatus, setRadioBtnStatus }) => {
+export const RadioStatusButton = ({
+  radioBtnStatus,
+  setRadioBtnStatus,
+  label = "Status",
+}) => {
   return (
     <div className="product-input-container">
       <span htmlFor="category-status" className="add-product-label">
-        Category Status
+        {label}
       </span>
 
       <button

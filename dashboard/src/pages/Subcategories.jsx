@@ -2,66 +2,79 @@ import { CardTop } from "../components/CardTop";
 import { MainCardContainer } from "../components/MainCardCointainer";
 import { MainSection } from "../components/MainSection";
 import { SearchInput } from "../components/SearchInput";
-import { CategoryTable } from "../components/category/CategoryTable";
 import { useEffect, useState } from "react";
-import { AddCategoryForm } from "../components/category/AddCategoryForm";
 import { fetchApiData } from "../services/fetchApiData";
+import { AddSubcategoryForm } from "../components/category/AddSubcategoryForm";
+import { SubcategoryTable } from "../components/category/SubcategoryTable";
 
-export const Categories = () => {
-  const [categoryData, setCategoryData] = useState([]);
+export const Subcategories = () => {
+  const [subcategoryData, setSubcategoryData] = useState([]);
+  const [allcategoryData, setAllCategoryData] = useState([]);
   const [radioBtnStatus, setRadioBtnStatus] = useState(true);
   const [imageUrl, setImageUrl] = useState("");
   const [inputData, setInputData] = useState({
     _id: "",
-    categoryName: "",
-    categoryDescription: "",
-    categoryType: "parent-category",
+    subcategoryName: "",
+    subcategoryDescription: "",
+    parentCategory: "select-parent-category",
   });
-  const [oldCategoryData, setOldCategoryData] = useState({});
+  const [oldSubcategoryData, setOldSubcategoryData] = useState({});
 
   // get category
+  const getSubcategory = async () => {
+    const res = await fetchApiData(
+      `${import.meta.env.VITE_API_BASE_URL}admin/subcategory/view`,
+    );
+
+    setSubcategoryData(res.data);
+  };
+
+  // get all parent category
   const getCategory = async () => {
     const res = await fetchApiData(
       `${import.meta.env.VITE_API_BASE_URL}admin/category/view`,
     );
 
-    setCategoryData(res.data);
+    setAllCategoryData(res.data);
   };
 
   useEffect(() => {
+    getSubcategory();
     getCategory();
   }, []);
 
   return (
     <MainSection>
       <MainCardContainer>
-        <CardTop heading="Categories">
+        <CardTop heading="Sub Categories">
           <div className="flex items-center justify-center gap-5">
             <SearchInput />
           </div>
         </CardTop>
       </MainCardContainer>
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <AddCategoryForm
-          getCategory={getCategory}
-          categoryData={categoryData}
+        <AddSubcategoryForm
+          subcategoryData={subcategoryData}
+          allcategoryData={allcategoryData}
           inputData={inputData}
           setInputData={setInputData}
           imageUrl={imageUrl}
           setImageUrl={setImageUrl}
-          oldCategoryData={oldCategoryData}
-          setOldCategoryData={setOldCategoryData}
+          oldSubcategoryData={oldSubcategoryData}
+          setOldSubcategoryData={setOldSubcategoryData}
+          getSubcategory={getSubcategory}
           radioBtnStatus={radioBtnStatus}
           setRadioBtnStatus={setRadioBtnStatus}
         />
-        <CategoryTable
-          data={categoryData}
+
+        <SubcategoryTable
+          subcategoryData={subcategoryData}
           inputData={inputData}
           setInputData={setInputData}
           setImageUrl={setImageUrl}
-          oldCategoryData={oldCategoryData}
-          setOldCategoryData={setOldCategoryData}
-          getCategory={getCategory}
+          oldSubcategoryData={oldSubcategoryData}
+          setOldSubcategoryData={setOldSubcategoryData}
+          getSubcategory={getSubcategory}
           radioBtnStatus={radioBtnStatus}
           setRadioBtnStatus={setRadioBtnStatus}
         />

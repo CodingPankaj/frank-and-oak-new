@@ -17,6 +17,11 @@ import axios from "axios";
 import { toastError, toastSuccess } from "../utils/tostifytoast";
 import { fetchApiData } from "../services/fetchApiData";
 import { getInputValue } from "../utils/getInputValue";
+import { RadioStatusButton } from "../components/RadioStatusButton";
+import { ActionBtnContainer } from "../components/ActionBtnContainer";
+import { ActionBtnEdit } from "../components/ActionBtnEdit";
+import { ActionBtnDelete } from "../components/ActionBtnDelete";
+import { deleteSingleData } from "../services/deleteSingleData";
 
 export const Color = () => {
   // store all color
@@ -29,6 +34,8 @@ export const Color = () => {
     colorValue: "",
   });
 
+  const [oldColorData, setOldColorData] = useState({});
+
   // empty data for form to empty input field
   const emptyData = {
     _id: "",
@@ -39,11 +46,13 @@ export const Color = () => {
   // input filed error for showing error message
   const [inputFieldNameError, setInputFieldNameError] = useState(false);
   const [inputFieldValueError, setInputFieldValueError] = useState(false);
+  // active in active radio button status
+  const [radioBtnStatus, setRadioBtnStatus] = useState(true);
 
   // submit button loading and disable submit button
   const [submitBtnLoader, setSubmitBtnLoader] = useState(false);
 
-  // get all colors
+  // get all colors function
   const getAllColors = async () => {
     const res = await fetchApiData(
       `${import.meta.env.VITE_API_BASE_URL}admin/color/view`,
@@ -62,7 +71,7 @@ export const Color = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    const { colorName, colorValue } = formData;
+    const { _id, colorName, colorValue, colorStatus } = formData;
 
     // check if color name is empty
     if (!colorName) {
@@ -76,28 +85,68 @@ export const Color = () => {
       return toastError("Color value cannot be empty");
     }
 
+    const newFormData = {};
+
+    if (_id) {
+      if (oldColorData.colorName !== colorName) {
+        newFormData.colorName = colorName;
+      }
+
+      if (oldColorData.colorValue !== colorValue) {
+        newFormData.colorValue = colorValue;
+      }
+
+      if (oldColorData.colorStatus !== radioBtnStatus) {
+        newFormData.colorStatus = radioBtnStatus;
+      }
+
+      if (Object.keys(newFormData).length === 0) {
+        return toastError("Make any changes to update color");
+      }
+
+      newFormData._id = _id;
+    }
+
+    if (!_id) {
+      newFormData.colorName = colorName;
+      newFormData.colorValue = colorValue;
+      newFormData.colorStatus = radioBtnStatus;
+    }
+
+    // change url and api method
+    const endpoint = _id ? "admin/color/update" : "admin/color/add";
+    const apiMethod = _id ? "patch" : "post";
+
     // set submit button status true
     setSubmitBtnLoader(true);
 
     try {
       // send form data to api
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/admin/color/add`,
-        formData,
+      const res = await axios[apiMethod](
+        `${import.meta.env.VITE_API_BASE_URL}${endpoint}`,
+        newFormData,
         { withCredentials: true },
       );
 
-      toastSuccess("New color added");
-      getAllColors();
-      setSubmitBtnLoader(false);
-      setInputFieldValueError(false);
-      setInputFieldNameError(false);
-      setFormData(emptyData);
+      if (res.status === 200) {
+        getAllColors();
+        setSubmitBtnLoader(false);
+        setInputFieldValueError(false);
+        setInputFieldNameError(false);
+        setFormData(emptyData);
+        setRadioBtnStatus(true);
+        toastSuccess("New color added");
+      }
     } catch (error) {
       toastError("Failed to add color");
       setSubmitBtnLoader(false);
-      console.log(error);
     }
+  };
+
+  // handle delete color
+  const handleColorDelete = async (id) => {
+    const deleteUrl = `admin/color/delete/${id}`;
+    await deleteSingleData(deleteUrl, getAllColors);
   };
 
   return (
@@ -138,6 +187,12 @@ export const Color = () => {
                 placeholder="Enter Color Value"
               />
 
+              {/* Color Status */}
+              <RadioStatusButton
+                radioBtnStatus={radioBtnStatus}
+                setRadioBtnStatus={setRadioBtnStatus}
+              />
+
               {/* Submit Button */}
               <div className="mb-4 mt-4 flex items-center justify-center gap-4">
                 <SubmitBtn
@@ -160,14 +215,22 @@ export const Color = () => {
               <TableTh>ID</TableTh>
               <TableTh>Color Name</TableTh>
               <TableTh>Color Value</TableTh>
-              <TableTh>Color Visual</TableTh>
+              <TableTh>Preview</TableTh>
+              <TableTh>Status</TableTh>
               <TableTh>Action</TableTh>
             </TableHead>
             <tbody>
               {allColors &&
                 allColors.length > 0 &&
                 allColors.map((item, index) => (
-                  <SizeList key={index} item={item} />
+                  <ColorList
+                    key={index}
+                    item={item}
+                    handleColorDelete={handleColorDelete}
+                    setOldColorData={setOldColorData}
+                    setFormData={setFormData}
+                    setRadioBtnStatus={setRadioBtnStatus}
+                  />
                 ))}
             </tbody>
           </Table>
@@ -177,7 +240,27 @@ export const Color = () => {
   );
 };
 
-const SizeList = ({ item: { _id, colorName, colorValue } }) => {
+const ColorList = ({
+  item,
+  handleColorDelete,
+  setFormData,
+  setOldColorData,
+  setRadioBtnStatus,
+}) => {
+  const { _id, colorName, colorValue, colorStatus } = item;
+
+  const colorData = {
+    _id,
+    colorName,
+    colorValue,
+  };
+
+  const handleColorEdit = () => {
+    setFormData(colorData);
+    setOldColorData(colorData);
+    setRadioBtnStatus(colorStatus);
+  };
+
   return (
     <TableTr>
       <TableTd>
@@ -199,7 +282,13 @@ const SizeList = ({ item: { _id, colorName, colorValue } }) => {
         ></div>
       </TableTd>
       <TableTd>
-        <ActionButtons />
+        <TableTextSpan>{colorStatus ? "Active" : "In Active"}</TableTextSpan>
+      </TableTd>
+      <TableTd>
+        <ActionBtnContainer>
+          <ActionBtnEdit onClick={handleColorEdit} />
+          <ActionBtnDelete onClick={() => handleColorDelete(_id)} />
+        </ActionBtnContainer>
       </TableTd>
     </TableTr>
   );

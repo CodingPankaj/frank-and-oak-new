@@ -77,10 +77,6 @@ export const sideNav = [
     path: "/categories",
     children: [
       {
-        label: "All Categories",
-        path: "/categories/all",
-      },
-      {
         label: "Parent Category",
         path: "/categories/parent-category",
       },
@@ -265,6 +261,6 @@ export const sideNav = [
   {
     icon: <MdOutlineExitToApp />,
     label: "Logout",
-    path: "/login",
+    path: "/logout",
   },
 ];

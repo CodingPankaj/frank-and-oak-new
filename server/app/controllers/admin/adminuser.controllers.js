@@ -4,6 +4,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { Admin } from "../../models/admin.model.js";
 import { cookieOptions } from "../../constants.js";
 
+// generate access token and refresh token
 const generateAccessAndRefreshToken = async (adminId) => {
   try {
     // check for empty admin id
@@ -36,6 +37,7 @@ const generateAccessAndRefreshToken = async (adminId) => {
   }
 };
 
+// register user
 export const adminRegister = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -75,6 +77,7 @@ export const adminRegister = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, newAdmin, "User registered successfully"));
 });
 
+// login user
 export const adminLogin = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -126,10 +129,30 @@ export const adminLogin = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User loggedin successfully"));
 });
 
+// get current user
 export const getCurrentAdmin = asyncHandler(async (req, res) => {
   const user = req.user;
 
   return res
     .status(200)
     .json(new ApiResponse(200, user, "User fetched successfully"));
+});
+
+// logout user
+export const adminLogout = asyncHandler(async (req, res) => {
+  const logoutAdmin = await Admin.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: undefined,
+      },
+    },
+    { new: true }
+  );
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
+    .json(new ApiResponse(200, "", "User logout successfully"));
 });

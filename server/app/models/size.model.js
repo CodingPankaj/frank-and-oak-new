@@ -6,6 +6,10 @@ const sizeSchema = new Schema(
       type: String,
       required: true,
     },
+    sizeStatus: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

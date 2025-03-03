@@ -7,7 +7,16 @@ import {
 } from "../../utils/cloudinary.js";
 import { Category } from "../../models/category.model.js";
 
-// add and update categoy
+// get category
+export const getCategory = asyncHandler(async (req, res) => {
+  const category = await Category.find();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, category, "Category fetched successfully"));
+});
+
+// add categoy
 export const addCategory = asyncHandler(async (req, res) => {
   const { categoryName, categoryDescription, categoryStatus } = req.body;
 
@@ -32,7 +41,7 @@ export const addCategory = asyncHandler(async (req, res) => {
 
   // create new category
   const category = await Category.create({
-    categoryName,
+    categoryName: categoryName.trim(),
     categoryDescription: categoryDescription ? categoryDescription?.trim() : "",
     categoryStatus,
     categoryImage: categoryImage.url,
@@ -48,40 +57,7 @@ export const addCategory = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, category, "Category added successfully"));
 });
 
-// get category
-export const getCategory = asyncHandler(async (req, res) => {
-  const category = await Category.find();
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, category, "Categoy fetched successfully"));
-});
-
-// delete category
-export const deleteCategory = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-
-  if (!id) {
-    throw new ApiError(400, "Id is required for deleting category");
-  }
-
-  const category = await Category.findById(id);
-
-  if (!category) {
-    throw new ApiError(404, "Categoy not found");
-  }
-
-  const deletedCategory = await Category.findByIdAndDelete(id);
-
-  if (!deletedCategory) {
-    throw new ApiError(500, "Something went wrong while deleting category");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "", "Category deleted successfully"));
-});
-
+// update sub category
 export const updateCategory = asyncHandler(async (req, res) => {
   const { _id, categoryName, categoryDescription, categoryStatus } = req.body;
 
@@ -139,6 +115,7 @@ export const updateCategory = asyncHandler(async (req, res) => {
     fieldsToUpdate.categoryImage = categoryImage.url;
   }
 
+  // update category
   const updatedCategory = await Category.findByIdAndUpdate(
     _id,
     fieldsToUpdate,
@@ -166,4 +143,29 @@ export const updateCategory = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, updatedCategory, "Category updated successfully")
     );
+});
+
+// delete category
+export const deleteCategory = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+
+  if (!id) {
+    throw new ApiError(400, "Id is required for deleting category");
+  }
+
+  const category = await Category.findById(id);
+
+  if (!category) {
+    throw new ApiError(404, "Categoy not found");
+  }
+
+  const deletedCategory = await Category.findByIdAndDelete(id);
+
+  if (!deletedCategory) {
+    throw new ApiError(500, "Something went wrong while deleting category");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "", "Category deleted successfully"));
 });

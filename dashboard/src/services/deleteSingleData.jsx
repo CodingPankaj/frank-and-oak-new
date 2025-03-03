@@ -13,8 +13,6 @@ export const deleteSingleData = async (deleteApiUrl, cb, message = "item") => {
         },
       );
 
-      console.log(res);
-
       // function to call after item is deleted for example get/fetch data function
       await cb();
       toastError(`${message} deleted`);

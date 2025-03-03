@@ -12,40 +12,42 @@ import { ActionBtnDelete } from "../ActionBtnDelete";
 import { ActionBtnContainer } from "../ActionBtnContainer";
 import { deleteSingleData } from "../../services/deleteSingleData";
 
-export const CategoryTable = ({
-  data,
+export const SubcategoryTable = ({
+  subcategoryData,
   setInputData,
   setImageUrl,
-  oldCategoryData,
-  setOldCategoryData,
-  getCategory,
+  oldSubcategoryData,
+  setOldSubcategoryData,
+  getSubcategory,
   setRadioBtnStatus,
 }) => {
   return (
     <MainCardContainer className="lg:col-span-2">
-      <CardTop heading="Categories" headingStyle="text-sm" />
+      <CardTop heading="Sub Categories" headingStyle="text-sm" />
       <Table>
         <TableHead>
           <TableTh>
-            <CheckBox name="category-box" />
+            <CheckBox name="sub-category-box" />
           </TableTh>
           <TableTh>ID</TableTh>
           <TableTh>Image</TableTh>
-          <TableTh>Categoy</TableTh>
+          <TableTh>Category</TableTh>
+          <TableTh>Parent Category</TableTh>
           <TableTh>Status</TableTh>
           <TableTh>Actions</TableTh>
         </TableHead>
         <tbody>
-          {data &&
-            data.map((item, index) => (
+          {subcategoryData &&
+            subcategoryData.length > 0 &&
+            subcategoryData.map((item, index) => (
               <CategoryList
-                key={index}
+                key={item._id}
                 item={item}
                 setInputData={setInputData}
                 setImageUrl={setImageUrl}
-                oldCategoryData={oldCategoryData}
-                setOldCategoryData={setOldCategoryData}
-                getCategory={getCategory}
+                oldSubcategoryData={oldSubcategoryData}
+                setOldSubcategoryData={setOldSubcategoryData}
+                getSubcategory={getSubcategory}
                 setRadioBtnStatus={setRadioBtnStatus}
               />
             ))}
@@ -59,32 +61,32 @@ const CategoryList = ({
   item,
   setInputData,
   setImageUrl,
-  setOldCategoryData,
-  getCategory,
+  setOldSubcategoryData,
+  getSubcategory,
   setRadioBtnStatus,
 }) => {
   const {
     _id,
-    categoryName,
-    categoryImage,
-    categoryStatus,
-    categoryDescription,
-    categoryType,
+    subcategoryName,
+    subcategoryImage,
+    subcategoryStatus,
+    subcategoryDescription,
+    parentCategory,
   } = item;
 
-  // category data made from item
+  // sub category data made from item
   const catData = {
     _id,
-    categoryName,
-    categoryStatus,
-    categoryDescription,
-    categoryType,
+    subcategoryName,
+    subcategoryStatus,
+    subcategoryDescription,
+    parentCategory,
   };
 
-  // Delete category
+  // // Delete sub category
   const handleDelete = async (id) => {
-    const deleteUrl = `admin/category/delete/${id}`;
-    await deleteSingleData(deleteUrl, getCategory, "category");
+    const deleteUrl = `admin/subcategory/delete/${id}`;
+    await deleteSingleData(deleteUrl, getSubcategory, "Sub category");
   };
 
   const handleEditButtonClick = () => {
@@ -92,13 +94,13 @@ const CategoryList = ({
     setInputData(catData);
 
     // set category data to old category data for comparaison, if changes are made or not
-    setOldCategoryData({ ...catData, categoryImage });
+    setOldSubcategoryData({ ...catData, subcategoryImage });
 
     // setting the old image url to show the image in ui while ediing
-    setImageUrl(categoryImage);
+    setImageUrl(subcategoryImage);
 
-    // change radio button status
-    setRadioBtnStatus(categoryStatus);
+    // update radio button status
+    setRadioBtnStatus(subcategoryStatus);
   };
 
   return (
@@ -111,14 +113,23 @@ const CategoryList = ({
       </TableTd>
       <TableTd>
         <div className="size-10 overflow-hidden rounded">
-          <img src={categoryImage} alt="thumbnail" />
+          <img src={subcategoryImage} alt="thumbnail" />
         </div>
       </TableTd>
       <TableTd>
-        <TableTextSpan>{categoryName}</TableTextSpan>
+        <TableTextSpan>{subcategoryName}</TableTextSpan>
       </TableTd>
+
       <TableTd>
-        <TableTextSpan>{categoryStatus ? "Active" : "In Active"}</TableTextSpan>
+        <TableTextSpan>
+          {parentCategory ? parentCategory.categoryName : "N/A"}
+        </TableTextSpan>
+      </TableTd>
+
+      <TableTd>
+        <TableTextSpan>
+          {subcategoryStatus ? "Active" : "In Active"}
+        </TableTextSpan>
       </TableTd>
 
       <TableTd>

@@ -59,7 +59,7 @@ export const Login = () => {
     <section className="flex min-h-screen w-full items-center justify-center bg-accent-color/60 px-3">
       <div className="flex max-w-[500px] grow flex-col items-center rounded bg-bg-primary-color px-5 py-12 font-medium md:px-12 md:py-20">
         <h3 className="text-2xl font-semibold text-text-primary-color">
-          SIgn In
+          Sign In
         </h3>
         <p className="mt-4 text-[15px] text-text-secondary-color">
           Welcome back !

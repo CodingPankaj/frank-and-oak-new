@@ -10,14 +10,18 @@ import { upload } from "../../middlewares/multer.middleware.js";
 
 export const categoryRouter = Router();
 
+// get category
 categoryRouter.route("/view").get(getCategory);
 
+// add category
 categoryRouter
   .route("/add")
   .post(verifyAdminJwt, upload.single("categoryImage"), addCategory);
 
+// update category
 categoryRouter
   .route("/update")
   .patch(verifyAdminJwt, upload.single("categoryImage"), updateCategory);
 
+// delete category
 categoryRouter.route("/delete/:id").delete(verifyAdminJwt, deleteCategory);

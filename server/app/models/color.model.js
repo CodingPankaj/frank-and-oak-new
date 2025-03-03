@@ -10,6 +10,10 @@ const colorSchema = new Schema(
       type: String,
       required: true,
     },
+    colorStatus: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

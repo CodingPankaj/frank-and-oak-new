@@ -28,25 +28,17 @@ export const Size = () => {
   const [allSizes, setAllSizes] = useState([]);
   const [radioBtnStatus, setRadioBtnStatus] = useState(true);
   const [inputFieldNameError, setInputFieldNameError] = useState(false);
-
+  const [oldFormData, setOldFormData] = useState({});
   const [formData, setFormData] = useState({
     _id: "",
     sizeName: "",
-    sizeStatus: true,
   });
 
   // empty form data
   const emptyFormData = {
     _id: "",
     sizeName: "",
-    sizeStatus: true,
   };
-
-  useEffect(() => {
-    const newFormData = { ...formData };
-    newFormData.sizeStatus = radioBtnStatus;
-    setFormData(newFormData);
-  }, [radioBtnStatus]);
 
   // Get all sizes from database
   const getAllSizes = async () => {
@@ -70,7 +62,7 @@ export const Size = () => {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    const { sizeName, sizeStatus, _id } = formData;
+    const { sizeName, _id } = formData;
     // Empty Size Name
     if (!sizeName) {
       setInputFieldNameError(true);
@@ -86,38 +78,73 @@ export const Size = () => {
       return toastWarn("Duplicate size name");
     }
 
+    const newFormData = {};
+
+    // _id is present
+    if (_id) {
+      // check if old size name has changed
+      if (oldFormData.sizeName !== sizeName) {
+        newFormData.sizeName = sizeName;
+      }
+
+      // check if old size status has changed
+      if (oldFormData.sizeStatus !== radioBtnStatus) {
+        newFormData.sizeStatus = radioBtnStatus;
+      }
+
+      // check if no changes are made by checking if new form data is empty
+      if (Object.keys(newFormData).length === 0) {
+        return toastError("Make any changes to update size");
+      }
+
+      // add _id to new form data
+      newFormData._id = _id;
+    }
+
+    if (!_id) {
+      newFormData.sizeName = sizeName;
+      newFormData.sizeStatus = radioBtnStatus;
+    }
+
+    // change url and api method
+    const endpoint = _id ? "admin/size/update" : "admin/size/add";
+    const apiMethod = _id ? "patch" : "post";
+
+    // setting button loader and disabling button
     setLoading(true);
     // Add Size Name to Database
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}admin/size/add`,
-        formData,
+      const res = await axios[apiMethod](
+        `${import.meta.env.VITE_API_BASE_URL}${endpoint}`,
+        newFormData,
         {
           withCredentials: true,
         },
       );
 
-      // get all sizes
-      getAllSizes();
+      if (res.status === 200) {
+        // get all sizes
+        getAllSizes();
 
-      // Empty input fields
-      setFormData(emptyFormData);
+        // Empty input fields
+        setFormData(emptyFormData);
 
-      // set radio button ture
-      setRadioBtnStatus(true);
+        // set radio button ture
+        setRadioBtnStatus(true);
 
-      // set input fields error to false
-      setInputFieldNameError(false);
+        // set input fields error to false
+        setInputFieldNameError(false);
 
-      // set button loading false
-      setLoading(false);
+        // set button loading false
+        setLoading(false);
 
-      // show toast notification
-      toastSuccess("Size Added");
+        // show toast notification
+        toastSuccess(_id ? "Size updated" : "Size added");
+      }
       return;
     } catch (error) {
       console.log(error?.message);
-      toastError("Failed to add size");
+      toastError(_id ? "Failed to update size" : "Failed to add size");
       setLoading(false);
     }
   };
@@ -127,27 +154,6 @@ export const Size = () => {
     const deleteUrl = `${import.meta.env.VITE_API_BASE_URL}admin/size/delete/${id}`;
     await deleteSingleData(deleteUrl, getAllSizes);
   };
-
-  const [bulkDeleteItemId, setBulkDeleteItemId] = useState([]);
-
-  // Bulk Delete
-  const handleBulkDelete = async () => {
-    try {
-      const res = await axios.delete(
-        `${import.meta.env.VITE_API_BASE_URL}admin/size/delete`,
-        {
-          data: bulkDeleteItemId,
-        },
-      );
-      setBulkDeleteItemId([]);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  // useEffect(() => {
-  //   console.log(bulkDeleteItemId);
-  // }, [bulkDeleteItemId]);
 
   return (
     <MainSection>
@@ -202,9 +208,7 @@ export const Size = () => {
         <MainCardContainer>
           <CardTop heading="All Sizes" headingStyle="text-sm">
             <div>
-              <button className="primary-btn" onClick={handleBulkDelete}>
-                Delete
-              </button>
+              <button className="primary-btn">Delete</button>
             </div>
           </CardTop>
           {allSizes.length >= 1 ? (
@@ -226,7 +230,8 @@ export const Size = () => {
                     slNo={index}
                     handleSizeDelete={handleSizeDelete}
                     setFormData={setFormData}
-                    setBulkDeleteItemId={setBulkDeleteItemId}
+                    setRadioBtnStatus={setRadioBtnStatus}
+                    setOldFormData={setOldFormData}
                   />
                 ))}
               </tbody>
@@ -245,17 +250,28 @@ const SizeList = ({
   slNo,
   handleSizeDelete,
   setFormData,
-  setBulkDeleteItemId,
+  setRadioBtnStatus,
+  setOldFormData,
 }) => {
+  const sizedata = {
+    sizeName,
+    sizeStatus,
+    _id,
+  };
+
+  const handleSizeEdit = () => {
+    // set sizedata to  form data to edit size
+    setFormData(sizedata);
+    // set sizedata to old form data to compare change
+    setOldFormData(sizedata);
+    // set radio button status
+    setRadioBtnStatus(sizeStatus);
+  };
+
   return (
     <TableTr>
       <TableTd>
-        <CheckBox
-          name="category-box"
-          onChange={() => {
-            setBulkDeleteItemId((prev) => [...prev, _id]);
-          }}
-        />
+        <CheckBox name="category-box" />
       </TableTd>
       <TableTd>
         <TableTextSpan>{slNo + 1}</TableTextSpan>
@@ -268,16 +284,7 @@ const SizeList = ({
       </TableTd>
       <TableTd>
         <ActionBtnContainer>
-          <ActionBtnEdit
-            onClick={() =>
-              setFormData((prevData) => ({
-                ...prevData,
-                sizeName: sizeName,
-                sizeStatus: sizeStatus,
-                _id,
-              }))
-            }
-          />
+          <ActionBtnEdit onClick={handleSizeEdit} />
           <ActionBtnDelete onClick={() => handleSizeDelete(_id)} />
         </ActionBtnContainer>
       </TableTd>

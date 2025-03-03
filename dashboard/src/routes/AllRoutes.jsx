@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import { AppLayout } from "../common/AppLayout";
 import { Dashboard } from "../pages/Dashboard";
 import { Products } from "../pages/Products";
@@ -14,11 +14,17 @@ import { Size } from "../pages/Size";
 import { Color } from "../pages/Color";
 import { Login } from "../pages/LogIn";
 import { ProtectedRoute } from "../common/ProtectedRoute";
+import { Subcategories } from "../pages/Subcategories";
+import { Logout } from "../components/Logout";
 
 export const AllRoutes = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/logout",
+    element: <Logout />,
   },
 
   {
@@ -59,15 +65,8 @@ export const AllRoutes = createBrowserRouter([
             ],
           },
           { path: "/orders/order-details", element: <OrderDetails /> },
-          {
-            path: "/categories",
-            element: <Categories />,
-            children: [
-              { path: "all", element: <Categories /> },
-              { path: "parent-category", element: <Categories /> },
-              { path: "sub-category", element: <Categories /> },
-            ],
-          },
+          { path: "categories/parent-category", element: <Categories /> },
+          { path: "categories/sub-category", element: <Subcategories /> },
           {
             path: "/size",
             element: <Size />,
