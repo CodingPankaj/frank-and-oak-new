@@ -143,7 +143,6 @@ export const Size = () => {
       }
       return;
     } catch (error) {
-      console.log(error?.message);
       toastError(_id ? "Failed to update size" : "Failed to add size");
       setLoading(false);
     }

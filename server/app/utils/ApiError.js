@@ -10,6 +10,7 @@ export class ApiError extends Error {
 
     // Now you can access 'this' properties
     this.statusCode = statusCode;
+    this.message = message;
     this.errors = errors;
     this.data = null;
     this.success = false;

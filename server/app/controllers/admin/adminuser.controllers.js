@@ -107,7 +107,7 @@ export const adminLogin = asyncHandler(async (req, res) => {
   const isPasswordValid = await admin.isPasswordCorrect(password);
 
   if (!isPasswordValid) {
-    throw new ApiError(400, "Invalid user credentials");
+    throw new ApiError(401, "Invalid user credentials");
   }
 
   // generate access token

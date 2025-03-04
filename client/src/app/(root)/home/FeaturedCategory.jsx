@@ -1,7 +1,28 @@
+"use client";
 import { MainContainer } from "@/app/components/MainContainer";
+import axios from "axios";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export const FeaturedCategoy = () => {
+  const [categorydata, setcategorydata] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:8080/api/v1/admin/subcategory/view",
+        { withCredentials: true }
+      );
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  });
+
   return (
     <section>
       <MainContainer className="py-10 lg:py-16">

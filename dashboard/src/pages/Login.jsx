@@ -5,10 +5,16 @@ import { FaXTwitter } from "react-icons/fa6";
 import axios from "axios";
 import { MainContext } from "../context/MainContext";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toastError } from "../utils/tostifytoast";
+import { SubmitBtn } from "../components/SubmitBtn";
+import { ToastContainer } from "react-toastify";
 
 export const Login = () => {
-  const [email, setEmail] = useState("");
+  const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [submitBtnLoader, setSubmitButtonLoader] = useState(false);
+  const [emptyUsernameError, setEmptyUsernameError] = useState(false);
+  const [emptyPasswordError, setEmptyPasswordError] = useState(false);
   const { setIsLoggedin } = useContext(MainContext);
 
   const navigate = useNavigate();
@@ -28,7 +34,7 @@ export const Login = () => {
         navigate("/");
       }
     } catch (error) {
-      console.log(error);
+      console.log(error?.response?.data?.message || "Unauthorized access");
     }
   };
 
@@ -39,20 +45,52 @@ export const Login = () => {
   // handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!usernameOrEmail || usernameOrEmail.trim() === "") {
+      return toastError("Enter username or email");
+    }
+
+    if (!password || password.trim() === "") {
+      return toastError("Enter Password");
+    }
+
+    const newFormData = {};
+
+    const isEnteredInputEmail = usernameOrEmail.includes("@");
+
+    if (isEnteredInputEmail) {
+      newFormData.email = usernameOrEmail;
+    }
+
+    if (!isEnteredInputEmail) {
+      newFormData.username = usernameOrEmail;
+    }
+
+    newFormData.password = password;
+
+    // return;
+
+    setSubmitButtonLoader(true);
+
     try {
       const res = await axios.post(
         "http://localhost:8080/api/v1/admin/login",
-        {
-          email,
-          password,
-        },
+        newFormData,
         { withCredentials: true },
       );
       if (res.status === 200) {
         setIsLoggedin(true);
         navigate("/");
+        setSubmitButtonLoader(false);
+        setEmptyUsernameError(false);
+        setEmptyPasswordError(false);
       }
-    } catch (error) {}
+    } catch (error) {
+      setSubmitButtonLoader(false);
+      setEmptyUsernameError(false);
+      setEmptyPasswordError(false);
+      toastError(error?.response?.data?.message || "Failed to login");
+    }
   };
 
   return (
@@ -68,6 +106,7 @@ export const Login = () => {
           onSubmit={handleSubmit}
           className="mt-6 flex w-full flex-col gap-4"
         >
+          {/* username email */}
           <div className="flex flex-col">
             <label
               htmlFor="login-email"
@@ -76,13 +115,21 @@ export const Login = () => {
               Username or Email
             </label>
             <input
-              type="email"
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              onChange={(e) => setUsernameOrEmail(e.target.value)}
               id="login-email"
-              placeholder="Enter Email"
+              placeholder="Username or email"
               className="mt-1 rounded border border-border-color bg-transparent p-2 px-3 text-left text-sm text-text-primary-color outline-none placeholder:text-text-secondary-color"
+              style={{ borderColor: emptyUsernameError ? "#ef4444" : "" }}
             />
+            {emptyUsernameError && (
+              <p className="text-[11px] text-red-500">
+                Username or Email is required
+              </p>
+            )}
           </div>
+
+          {/* password */}
           <div className="flex flex-col">
             <label
               htmlFor="login-password"
@@ -96,9 +143,14 @@ export const Login = () => {
               id="login-password"
               placeholder="Enter Password"
               className="mt-1 rounded border border-border-color bg-transparent p-2 px-3 text-left text-sm text-text-primary-color outline-none placeholder:text-text-secondary-color"
+              style={{ borderColor: emptyPasswordError ? "#ef4444" : "" }}
             />
+            {emptyPasswordError && (
+              <p className="text-[11px] text-red-500">Password is required</p>
+            )}
           </div>
 
+          {/* Forgot password */}
           <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <CheckBox id="login-remember" />
@@ -109,6 +161,7 @@ export const Login = () => {
             <p className="add-product-label underline">Forgot your Password?</p>
           </div>
 
+          {/* Social Login */}
           <div className="my-6">
             <div className="mb-6 grid grid-cols-[1fr_auto_1fr] gap-2">
               <span className="my-auto h-[1px] w-full bg-text-primary-color"></span>
@@ -139,16 +192,17 @@ export const Login = () => {
             </div>
           </div>
 
+          {/* Submit button */}
           <div className="flex text-center">
-            <button
-              to={"/"}
-              className="w-full rounded bg-accent-color px-4 py-2 font-medium text-white"
-            >
-              Sign In
-            </button>
+            <SubmitBtn
+              label="Log in"
+              submitBtnLoader={submitBtnLoader}
+              className="min-h-[35px] grow justify-center text-center"
+            />
           </div>
         </form>
       </div>
+      <ToastContainer />
     </section>
   );
 };

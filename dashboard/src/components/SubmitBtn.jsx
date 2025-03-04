@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { Loader } from "./Loader";
 
-export const SubmitBtn = ({ label = "Submit", submitBtnLoader = false }) => {
+export const SubmitBtn = ({
+  label = "Submit",
+  submitBtnLoader = false,
+  className = "",
+  ...props
+}) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -9,7 +14,12 @@ export const SubmitBtn = ({ label = "Submit", submitBtnLoader = false }) => {
   }, [submitBtnLoader]);
 
   return (
-    <button type="submit" className="primary-btn" disabled={loading}>
+    <button
+      type="submit"
+      className={`primary-btn ${className}`}
+      disabled={loading}
+      {...props}
+    >
       {label}
       {loading && (
         <Loader className={"size-[14px]"} loaderStyle={"fill-white"} />
