@@ -9,8 +9,7 @@ import { CheckBox } from "../components/CheckBox";
 import { TableTr } from "../components/table/TableTr";
 import { TableTd } from "../components/table/TableTd";
 import { TableTextSpan } from "../components/table/TableSpan";
-import { ActionButtons } from "../components/ActionsButtons";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { InputField } from "../components/InputField";
 import { SubmitBtn } from "../components/SubmitBtn";
 import axios from "axios";
@@ -22,10 +21,11 @@ import { ActionBtnContainer } from "../components/ActionBtnContainer";
 import { ActionBtnEdit } from "../components/ActionBtnEdit";
 import { ActionBtnDelete } from "../components/ActionBtnDelete";
 import { deleteSingleData } from "../services/deleteSingleData";
+import { MainContext } from "../context/MainContext";
 
 export const Color = () => {
   // store all color
-  const [allColors, setAllColors] = useState([]);
+  const { colorData, getAllColors } = useContext(MainContext);
 
   // form data
   const [formData, setFormData] = useState({
@@ -53,15 +53,10 @@ export const Color = () => {
   const [submitBtnLoader, setSubmitBtnLoader] = useState(false);
 
   // get all colors function
-  const getAllColors = async () => {
-    const res = await fetchApiData(
-      `${import.meta.env.VITE_API_BASE_URL}admin/color/view`,
-    );
-    setAllColors(res.data);
-  };
-
   useEffect(() => {
-    getAllColors();
+    if (colorData.length === 0) {
+      getAllColors();
+    }
   }, []);
 
   // handle change
@@ -220,9 +215,9 @@ export const Color = () => {
               <TableTh>Action</TableTh>
             </TableHead>
             <tbody>
-              {allColors &&
-                allColors.length > 0 &&
-                allColors.map((item, index) => (
+              {colorData &&
+                colorData.length > 0 &&
+                colorData.map((item, index) => (
                   <ColorList
                     key={index}
                     item={item}

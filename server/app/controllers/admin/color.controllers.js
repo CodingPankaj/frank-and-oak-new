@@ -32,7 +32,11 @@ export const addColor = asyncHandler(async (req, res) => {
   }
 
   // create new color
-  const color = await Color.create({ colorName, colorValue, colorStatus });
+  const color = await Color.create({
+    colorName: colorName.trim(),
+    colorValue: colorValue.trim(),
+    colorStatus,
+  });
 
   if (!color) {
     throw new ApiError(500, "Something went wrong while creating color");
@@ -73,7 +77,11 @@ export const updateColor = asyncHandler(async (req, res) => {
   const updatedColor = await Color.findByIdAndUpdate(
     _id,
     {
-      $set: { colorName, colorValue, colorStatus },
+      $set: {
+        colorName: colorName.trim(),
+        colorValue: colorValue.trim(),
+        colorStatus,
+      },
     },
     { new: true }
   );
@@ -89,14 +97,14 @@ export const updateColor = asyncHandler(async (req, res) => {
 
 // delete color
 export const deleteColor = asyncHandler(async (req, res) => {
-  const _id = req.params.id;
+  const id = req.params.id;
 
   // check if id is present
-  if (!_id) {
+  if (!id) {
     throw new ApiError(400, "Id is required");
   }
 
-  const deletedColor = await Color.findByIdAndDelete({ _id });
+  const deletedColor = await Color.findByIdAndDelete(id);
 
   if (!deletedColor) {
     throw new ApiError(404, "Color not found");

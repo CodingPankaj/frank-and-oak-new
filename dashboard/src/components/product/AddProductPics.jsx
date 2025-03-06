@@ -1,22 +1,17 @@
 import { MdClose } from "react-icons/md";
 import { CardTop } from "../CardTop";
 import { MainCardContainer } from "../MainCardCointainer";
-import { useState } from "react";
 
-export const AddProductPics = () => {
-  const [productImages, setProductImages] = useState([]);
-
+export const AddProductPics = ({ productImages, setProductImages }) => {
   const handleFileChange = (event) => {
-    const allFiles = event.target.files;
-    // console.log(URL.createObjectURL(allFiles));
+    const allFiles = Array.from(event.target.files);
 
-    console.log(Array.from(allFiles));
+    setProductImages((prev) => [...prev, ...allFiles]);
+  };
 
-    const fileUrls = Array.from(allFiles).map((item, index) =>
-      URL.createObjectURL(item),
-    );
-
-    setProductImages((prev) => [...prev, ...fileUrls]);
+  // remove images from
+  const handleClick = (imageUrl) => {
+    setProductImages((prev) => prev.filter((url) => url !== imageUrl));
   };
 
   return (
@@ -42,7 +37,11 @@ export const AddProductPics = () => {
         <div className="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {productImages &&
             productImages.map((item, index) => (
-              <DisplayUploadedPic key={index} src={item} />
+              <DisplayUploadedPic
+                key={index}
+                src={item}
+                handleClick={handleClick}
+              />
             ))}
         </div>
       </div>
@@ -50,12 +49,16 @@ export const AddProductPics = () => {
   );
 };
 
-const DisplayUploadedPic = ({ src = "/images/1.jpg" }) => {
+const DisplayUploadedPic = ({ src = "/images/1.jpg", handleClick }) => {
   return (
     <div className="relative aspect-square w-full overflow-hidden rounded">
-      <img src={src} alt="thumbnail" className="h-full w-full object-cover" />
+      <img
+        src={URL.createObjectURL(src)}
+        alt="thumbnail"
+        className="h-full w-full object-cover"
+      />
       <button
-        onClick={() => console.log("Hello")}
+        onClick={() => handleClick(src)}
         className="absolute right-1 top-1 flex items-center justify-center rounded-full bg-red-500 text-sm text-white lg:size-4 xl:size-5"
       >
         <MdClose />

@@ -1,22 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
 
-export const ProductSlider = () => {
-  const productImages = [
-    "/images/satin-tank-top-1.webp",
-    "/images/satin-tank-top-2.webp",
-    "/images/satin-tank-top-3.webp",
-    "/images/satin-tank-top-4.webp",
-    "/images/satin-tank-top-5.webp",
-  ];
+export const ProductSlider = ({ productImages }) => {
+  const swiperRef = useRef(null);
 
-  const [swiperInstance, setSwiperInstance] = useState(null);
-
+  // swiper instance
   useEffect(() => {
-    if (!swiperInstance) {
-      const swiper = new Swiper(".swiper", {
-        loop: true,
+    if (!swiperRef.current) {
+      // initialize swiper instance only once
+      swiperRef.current = new Swiper(".swiper", {
+        loop: productImages.length > 0,
+
         slidesPerView: 1,
         pagination: {
           el: ".swiper-pagination",
@@ -27,16 +22,30 @@ export const ProductSlider = () => {
           prevEl: ".swiper-button-prev",
         },
       });
-      setSwiperInstance(swiper);
+    } else {
+      // if wwiper is already initialized, update it
+      swiperRef.current.update();
     }
-  }, [swiperInstance]);
+
+    // removes swiper when unmounts
+    return () => {
+      if (swiperRef.current) {
+        swiperRef.current.destroy(true, true);
+        swiperRef.current = null;
+      }
+    };
+  }, [productImages]);
 
   return (
     <div className="swiper">
       <div className="swiper-wrapper">
-        {productImages.map((item, index) => (
-          <ProductSlides key={index} src={item} />
-        ))}
+        {productImages.length > 0 ? (
+          productImages.map((item, index) => (
+            <ProductSlides key={index} src={item} />
+          ))
+        ) : (
+          <ProductSlides src={"/images/satin-tank-top-1.webp"} />
+        )}
       </div>
 
       <div className="swiper-pagination"></div>
@@ -47,11 +56,13 @@ export const ProductSlider = () => {
 };
 
 const ProductSlides = ({ src }) => {
+  const imageSrc = typeof src === "string" ? src : URL.createObjectURL(src);
+
   return (
     <div className="swiper-slide">
       <figure className="aspect-[0.9] overflow-hidden rounded">
         <img
-          src={src}
+          src={imageSrc}
           alt="thumbnail"
           className="h-full w-full object-cover object-[top_center]"
         />

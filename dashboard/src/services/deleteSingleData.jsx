@@ -17,8 +17,6 @@ export const deleteSingleData = async (deleteApiUrl, cb, message = "item") => {
       await cb();
       toastError(`${message} deleted`);
     } catch (error) {
-      console.log(error);
-
       toastError(`Failed to delete ${message}`);
     }
   }

@@ -5,4 +5,4 @@ export const cookieOptions = {
 };
 
 export const CLOUDINARY_BASE_URL =
-  "http://res.cloudinary.com/dovo2tdtv/image/upload/v1740945565/";
+  "https://res.cloudinary.com/dovo2tdtv/image/upload/";

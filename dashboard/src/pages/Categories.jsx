@@ -3,12 +3,13 @@ import { MainCardContainer } from "../components/MainCardCointainer";
 import { MainSection } from "../components/MainSection";
 import { SearchInput } from "../components/SearchInput";
 import { CategoryTable } from "../components/category/CategoryTable";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AddCategoryForm } from "../components/category/AddCategoryForm";
 import { fetchApiData } from "../services/fetchApiData";
+import { MainContext } from "../context/MainContext";
 
 export const Categories = () => {
-  const [categoryData, setCategoryData] = useState([]);
+  const { categoryData, setCategoryData } = useContext(MainContext);
   const [radioBtnStatus, setRadioBtnStatus] = useState(true);
   const [imageUrl, setImageUrl] = useState("");
   const [inputData, setInputData] = useState({
@@ -29,7 +30,9 @@ export const Categories = () => {
   };
 
   useEffect(() => {
-    getCategory();
+    if (categoryData.length === 0) {
+      getCategory();
+    }
   }, []);
 
   return (

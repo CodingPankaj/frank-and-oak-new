@@ -1,24 +1,43 @@
 import { CardTop } from "../CardTop";
+import { InputField } from "../InputField";
 import { MainCardContainer } from "../MainCardCointainer";
 
-export const AddProductPricing = () => {
+export const AddProductPricing = ({
+  formData,
+  handleChange,
+  productPriceFieldError,
+}) => {
   return (
     <MainCardContainer>
       <CardTop heading="Pricing" headingStyle="text-sm" />
       <div className="pb-3 pt-2">
-        <div className="product-input-container">
-          <label htmlFor="product-price" className="add-product-label">
-            Product Price
-          </label>
-          <input
-            type="text"
-            id="product-price"
-            placeholder="Enter Product Price"
-            className="product-input"
-          />
-        </div>
-        <AddProductDiscount />
-        <div className="product-input-container">
+        <InputField
+          label="Product Price"
+          type="text"
+          id="product-price"
+          name="productPrice"
+          value={formData.productPrice}
+          onChange={handleChange}
+          setInputFieldError={productPriceFieldError}
+          placeholder="Enter Product Price"
+          className="product-input"
+        />
+
+        <InputField
+          label="Product Sale Price"
+          type="text"
+          id="product-sale-price"
+          name="productSalePrice"
+          value={formData.productSalePrice}
+          onChange={handleChange}
+          setInputFieldError={false}
+          placeholder="Enter Product Sale Price"
+          className="product-input"
+        />
+
+        {/* <AddProductDiscount /> */}
+
+        {/* <div className="product-input-container">
           <label htmlFor="product-price" className="add-product-label">
             Discount
           </label>
@@ -40,7 +59,7 @@ export const AddProductPricing = () => {
             className="product-input"
             disabled
           />
-        </div>
+        </div> */}
       </div>
     </MainCardContainer>
   );

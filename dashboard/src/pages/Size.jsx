@@ -9,7 +9,7 @@ import { CheckBox } from "../components/CheckBox";
 import { TableTr } from "../components/table/TableTr";
 import { TableTd } from "../components/table/TableTd";
 import { TableTextSpan } from "../components/table/TableSpan";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { ActionBtnContainer } from "../components/ActionBtnContainer";
 import { ActionBtnEdit } from "../components/ActionBtnEdit";
@@ -17,15 +17,15 @@ import { ActionBtnDelete } from "../components/ActionBtnDelete";
 import { NoDataFound } from "../components/NoDataFound";
 import { Loader } from "../components/Loader";
 import { RadioStatusButton } from "../components/RadioStatusButton";
-import { fetchApiData } from "../services/fetchApiData";
 import { toastError, toastSuccess, toastWarn } from "../utils/tostifytoast";
 import { InputField } from "../components/InputField";
 import { getInputValue } from "../utils/getInputValue";
 import { deleteSingleData } from "../services/deleteSingleData";
+import { MainContext } from "../context/MainContext";
 
 export const Size = () => {
+  const { sizeData, getAllSizes } = useContext(MainContext);
   const [loading, setLoading] = useState(false);
-  const [allSizes, setAllSizes] = useState([]);
   const [radioBtnStatus, setRadioBtnStatus] = useState(true);
   const [inputFieldNameError, setInputFieldNameError] = useState(false);
   const [oldFormData, setOldFormData] = useState({});
@@ -40,17 +40,11 @@ export const Size = () => {
     sizeName: "",
   };
 
-  // Get all sizes from database
-  const getAllSizes = async () => {
-    const res = await fetchApiData(
-      `${import.meta.env.VITE_API_BASE_URL}admin/size/view`,
-    );
-    setAllSizes(res.data);
-  };
-
-  // One tiime call of all sizes
+  // One time call of all sizes if its length is 0
   useEffect(() => {
-    getAllSizes();
+    if (sizeData.length === 0) {
+      getAllSizes();
+    }
   }, []);
 
   // Get data from input fields
@@ -70,7 +64,7 @@ export const Size = () => {
     }
 
     // Duplicate Size Name
-    const duplicateSizeName = allSizes.some(
+    const duplicateSizeName = sizeData.some(
       (item) => item.sizeName === sizeName,
     );
 
@@ -150,7 +144,7 @@ export const Size = () => {
 
   // Delete Size
   const handleSizeDelete = async (id) => {
-    const deleteUrl = `${import.meta.env.VITE_API_BASE_URL}admin/size/delete/${id}`;
+    const deleteUrl = `admin/size/delete/${id}`;
     await deleteSingleData(deleteUrl, getAllSizes);
   };
 
@@ -210,7 +204,7 @@ export const Size = () => {
               <button className="primary-btn">Delete</button>
             </div>
           </CardTop>
-          {allSizes.length >= 1 ? (
+          {sizeData.length >= 1 ? (
             <Table>
               <TableHead>
                 <TableTh>
@@ -222,7 +216,7 @@ export const Size = () => {
                 <TableTh>Action</TableTh>
               </TableHead>
               <tbody>
-                {allSizes.map((size, index) => (
+                {sizeData.map((size, index) => (
                   <SizeList
                     key={size._id}
                     size={size}

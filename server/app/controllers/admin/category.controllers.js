@@ -32,29 +32,43 @@ export const addCategory = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Category Image is required");
   }
 
-  // upload image to cloudinary
-  const categoryImage = await uploadToCloudinary(categoryImageLocalPath);
+  // stores category image after uploading to cloudinary
+  let categoryImage = null;
 
-  if (!categoryImage) {
-    throw new ApiError(500, "Something went wrong while uploading image");
+  try {
+    // upload image to cloudinary
+    categoryImage = await uploadToCloudinary(categoryImageLocalPath);
+
+    if (!categoryImage) {
+      throw new ApiError(500, "Something went wrong while uploading image");
+    }
+
+    // create new category
+    const category = await Category.create({
+      categoryName: categoryName.trim(),
+      categoryDescription: categoryDescription
+        ? categoryDescription?.trim()
+        : "",
+      categoryStatus,
+      categoryImage: categoryImage.secure_url,
+    });
+
+    if (!category) {
+      throw new ApiError(500, "Something went wrong while creating category");
+    }
+
+    // return response
+    return res
+      .status(200)
+      .json(new ApiResponse(200, category, "Category added successfully"));
+  } catch (error) {
+    if (categoryImage?.secure_url) {
+      await deleteFileFromCloudinary(categoryImage.secure_url);
+    }
+
+    // re throw errors to async handler
+    throw error;
   }
-
-  // create new category
-  const category = await Category.create({
-    categoryName: categoryName.trim(),
-    categoryDescription: categoryDescription ? categoryDescription?.trim() : "",
-    categoryStatus,
-    categoryImage: categoryImage.url,
-  });
-
-  if (!category) {
-    throw new ApiError(500, "Something went wrong while creating category");
-  }
-
-  // return response
-  return res
-    .status(200)
-    .json(new ApiResponse(200, category, "Category added successfully"));
 });
 
 // update sub category
@@ -84,11 +98,11 @@ export const updateCategory = asyncHandler(async (req, res) => {
 
   // check and select fields that are not empty
   if (categoryName) {
-    fieldsToUpdate.categoryName = categoryName;
+    fieldsToUpdate.categoryName = categoryName.trim();
   }
 
   if (categoryDescription) {
-    fieldsToUpdate.categoryDescription = categoryDescription;
+    fieldsToUpdate.categoryDescription = categoryDescription.trim();
   }
 
   if (categoryStatus) {
@@ -112,7 +126,7 @@ export const updateCategory = asyncHandler(async (req, res) => {
       throw new ApiError(500, "Something went wrong while uploading image");
     }
 
-    fieldsToUpdate.categoryImage = categoryImage.url;
+    fieldsToUpdate.categoryImage = categoryImage.secure_url;
   }
 
   // update category
@@ -153,12 +167,21 @@ export const deleteCategory = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Id is required for deleting category");
   }
 
+  //  find category by id
   const category = await Category.findById(id);
 
   if (!category) {
     throw new ApiError(404, "Categoy not found");
   }
 
+  // delete image
+  const deleteImage = await deleteFileFromCloudinary(category.categoryImage);
+
+  if (deleteImage.result === "not found") {
+    throw new ApiError(404, "Image not found");
+  }
+
+  // delete category
   const deletedCategory = await Category.findByIdAndDelete(id);
 
   if (!deletedCategory) {

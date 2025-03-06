@@ -9,8 +9,27 @@ import { TableTextSpan } from "../table/TableSpan";
 import { Statusbadge } from "../StatusBadge";
 import { CheckBox } from "../CheckBox";
 import { currencyFormatter } from "../../utils/currencyFormater";
+import { useEffect, useState } from "react";
+import { fetchApiData } from "../../services/fetchApiData";
+import { deleteSingleData } from "../../services/deleteSingleData";
+import { ActionBtnDelete } from "../ActionBtnDelete";
 
-export const ProductTable = ({ data = [] }) => {
+export const ProductTable = () => {
+  const [productData, setProductData] = useState([]);
+
+  // functions to get color data
+  const getAllProducts = async () => {
+    const res = await fetchApiData(
+      `${import.meta.env.VITE_API_BASE_URL}admin/product/view`,
+    );
+
+    setProductData(res.data);
+  };
+
+  useEffect(() => {
+    getAllProducts();
+  }, []);
+
   return (
     <Table>
       <TableHead>
@@ -19,45 +38,59 @@ export const ProductTable = ({ data = [] }) => {
         </TableTh>
         <TableTh>Product</TableTh>
         <TableTh>Category</TableTh>
-        <TableTh>Stock</TableTh>
+        <TableTh>Sub Category</TableTh>
         <TableTh>Size</TableTh>
         <TableTh>Color</TableTh>
         <TableTh>Price</TableTh>
+        <TableTh>Sale Price</TableTh>
         <TableTh>Status</TableTh>
-        <TableTh>Published</TableTh>
         <TableTh>Actions</TableTh>
       </TableHead>
       <tbody>
-        {data.map((item, index) => (
-          <ProductList item={item} key={index} />
-        ))}
+        {productData &&
+          productData.length > 0 &&
+          productData.map((product) => (
+            <ProductList
+              product={product}
+              key={product._id}
+              getAllProducts={getAllProducts}
+            />
+          ))}
       </tbody>
     </Table>
   );
 };
 
-const ProductList = ({
-  item: {
-    title,
-    brand,
-    image,
-    category,
-    stock,
-    size,
-    color,
-    price,
-    status,
-    published,
-  },
-}) => {
+const ProductList = ({ product, getAllProducts }) => {
+  const {
+    _id,
+    productName,
+    productParentCategory,
+    productSubcategory,
+    productImages,
+    productSizes,
+    productColors,
+    productPrice,
+    productSalePrice,
+  } = product;
+
   const publishedStatus = (status) => {
     if (status.toLowerCase() === "unpublished") return "250, 117, 22";
     if (status.toLowerCase() === "published") return "114, 92, 255";
     if (status.toLowerCase() === "draft") return "20, 184, 166";
   };
 
-  const formattedPrice = currencyFormatter(price);
-  const publishedstatusColor = publishedStatus(status);
+  // Delete category
+  const handleDelete = async (id) => {
+    const deleteUrl = `admin/product/delete/${id}`;
+    await deleteSingleData(deleteUrl, getAllProducts, "product");
+  };
+
+  const formattedPrice = currencyFormatter(productPrice);
+  const formattedSalePrice = productSalePrice
+    ? currencyFormatter(productSalePrice)
+    : "N/A";
+  // const publishedstatusColor = publishedStatus(status);
 
   return (
     <TableTr>
@@ -65,31 +98,58 @@ const ProductList = ({
         <CheckBox />
       </TableTd>
       <TableTd>
-        <ContentCard src={image} heading={title} subHeading={brand} />
+        <ContentCard
+          src={productImages[0]}
+          heading={productName}
+          subHeading={"Frank And Oak"}
+        />
       </TableTd>
       <TableTd>
-        <TableTextSpan>{category}</TableTextSpan>
+        <TableTextSpan>{productParentCategory.categoryName}</TableTextSpan>
       </TableTd>
       <TableTd>
-        <TableTextSpan>{stock}</TableTextSpan>
+        <TableTextSpan>{productSubcategory.subcategoryName}</TableTextSpan>
       </TableTd>
       <TableTd>
-        <TableTextSpan>{size}</TableTextSpan>
+        <TableTextSpan>
+          {productSizes &&
+            productSizes.length > 1 &&
+            productSizes.map((item) => (
+              <span key={item._id} className="mr-2">
+                {item.sizeName}
+              </span>
+            ))}
+        </TableTextSpan>
       </TableTd>
       <TableTd>
-        <TableTextSpan>{color}</TableTextSpan>
+        <div className="flex gap-2">
+          {productColors &&
+            productColors.length > 1 &&
+            productColors.map((item) => (
+              <div
+                key={item._id}
+                className={`size-3 rounded-full`}
+                style={{ backgroundColor: item.colorValue }}
+              ></div>
+            ))}
+        </div>
       </TableTd>
       <TableTd>
         <TableTextSpan className="font-bold">{formattedPrice}</TableTextSpan>
       </TableTd>
       <TableTd>
-        <Statusbadge color={publishedstatusColor}>{status}</Statusbadge>
+        <TableTextSpan className="font-bold">
+          {formattedSalePrice ? formattedSalePrice : "N/A"}
+        </TableTextSpan>
       </TableTd>
       <TableTd>
-        <TableTextSpan>{published ?? "N/A"}</TableTextSpan>
+        {/* <Statusbadge color={publishedstatusColor}>{}</Statusbadge> */}
       </TableTd>
       <TableTd>
-        <ActionButtons />
+        <TableTextSpan>{}</TableTextSpan>
+      </TableTd>
+      <TableTd>
+        <ActionBtnDelete onClick={() => handleDelete(_id)} />
       </TableTd>
     </TableTr>
   );

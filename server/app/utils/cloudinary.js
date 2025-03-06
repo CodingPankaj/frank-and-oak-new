@@ -31,12 +31,17 @@ export const uploadToCloudinary = async (
   }
 };
 
-// delete file from cloudinary using public id
+// delete single file from cloudinary using public id
 export const deleteFileFromCloudinary = async (imageUrl) => {
-  const publicId = imageUrl.replace(CLOUDINARY_BASE_URL, "").split(".")[0];
+  if (!imageUrl) return null;
 
   try {
-    if (!publicId) return null;
+    const publicId = imageUrl
+      .replace(CLOUDINARY_BASE_URL, "")
+      .split("/")
+      .slice(1)
+      .join("/")
+      .split(".")[0];
 
     const deleteResult = await cloudinary.uploader.destroy(publicId);
 
@@ -44,5 +49,77 @@ export const deleteFileFromCloudinary = async (imageUrl) => {
   } catch (error) {
     console.log("Delete failed", error);
     return null;
+  }
+};
+
+// upload multiple file to cloudinary
+export const uploadMultipleImageToCloudinary = async (
+  localFilePathArray,
+  cloudinaryFolderName
+) => {
+  if (!localFilePathArray || localFilePathArray.length === 0) return [];
+
+  const imageUrls = [];
+  try {
+    for (const localFilePath of localFilePathArray) {
+      if (!localFilePath) {
+        imageUrls.push(null);
+        continue;
+      }
+
+      try {
+        const res = await cloudinary.uploader.upload(localFilePath, {
+          resource_type: "auto",
+          folder: `frankandoak/${cloudinaryFolderName ?? ""}`,
+        });
+
+        imageUrls.push(res.secure_url);
+      } catch (error) {
+        console.error(`Error uploading file ${localFilePath}:`, error);
+        imageUrls.push(null);
+      }
+    }
+
+    return imageUrls;
+  } catch (error) {
+    console.log("Some thing went wrong while uploading file", error);
+    return [];
+  }
+};
+
+// delete multiple file from cloudinary
+
+export const delteMultipleFileFromCloudinary = async (imageUrlsArray) => {
+  if (!imageUrlsArray || imageUrlsArray.length === 0) return [];
+
+  const deleteResult = [];
+
+  try {
+    for (const imageUrl of imageUrlsArray) {
+      if (!imageUrl) return null;
+
+      const publicId = imageUrl
+        .replace(CLOUDINARY_BASE_URL, "")
+        .split("/")
+        .slice(1)
+        .join("/")
+        .split(".")[0];
+
+      // console.log(publicId);
+
+      try {
+        const res = await cloudinary.uploader.destroy(publicId);
+
+        deleteResult.push(res);
+      } catch (error) {
+        console.log(`Error uploading file ${localFilePath}:`, error);
+        deleteResult.push(null);
+      }
+    }
+
+    return deleteResult;
+  } catch (error) {
+    console.log("Some thing went wrong while deleting file", error);
+    return [];
   }
 };

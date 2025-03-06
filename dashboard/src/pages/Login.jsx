@@ -1,6 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { CheckBox } from "../components/CheckBox";
-import { FaApple, FaFacebookF, FaGoogle } from "react-icons/fa";
+import {
+  FaApple,
+  FaEye,
+  FaEyeSlash,
+  FaFacebookF,
+  FaGoogle,
+} from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import axios from "axios";
 import { MainContext } from "../context/MainContext";
@@ -15,8 +21,8 @@ export const Login = () => {
   const [submitBtnLoader, setSubmitButtonLoader] = useState(false);
   const [emptyUsernameError, setEmptyUsernameError] = useState(false);
   const [emptyPasswordError, setEmptyPasswordError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { setIsLoggedin } = useContext(MainContext);
-
   const navigate = useNavigate();
 
   // authenticate with access token
@@ -47,10 +53,12 @@ export const Login = () => {
     e.preventDefault();
 
     if (!usernameOrEmail || usernameOrEmail.trim() === "") {
+      setEmptyUsernameError(true);
       return toastError("Enter username or email");
     }
 
     if (!password || password.trim() === "") {
+      setEmptyPasswordError(true);
       return toastError("Enter Password");
     }
 
@@ -78,6 +86,7 @@ export const Login = () => {
         newFormData,
         { withCredentials: true },
       );
+
       if (res.status === 200) {
         setIsLoggedin(true);
         navigate("/");
@@ -137,14 +146,23 @@ export const Login = () => {
             >
               Password
             </label>
-            <input
-              type="text"
-              onChange={(e) => setPassword(e.target.value)}
-              id="login-password"
-              placeholder="Enter Password"
-              className="mt-1 rounded border border-border-color bg-transparent p-2 px-3 text-left text-sm text-text-primary-color outline-none placeholder:text-text-secondary-color"
-              style={{ borderColor: emptyPasswordError ? "#ef4444" : "" }}
-            />
+            <div className="relative flex flex-col">
+              <input
+                type={showPassword ? "text" : "password"}
+                onChange={(e) => setPassword(e.target.value)}
+                id="login-password"
+                placeholder="Enter Password"
+                className="mt-1 rounded border border-border-color bg-transparent p-2 pl-3 pr-5 text-left text-sm text-text-primary-color outline-none placeholder:text-text-secondary-color"
+                style={{ borderColor: emptyPasswordError ? "#ef4444" : "" }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2/4 -translate-y-2/4 cursor-pointer text-text-primary-color"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
             {emptyPasswordError && (
               <p className="text-[11px] text-red-500">Password is required</p>
             )}

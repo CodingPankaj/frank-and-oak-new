@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { CardTop } from "../CardTop";
 import { LinkBtnTwo } from "../LinkBtnTwo";
 import { MainCardContainer } from "../MainCardCointainer";
@@ -11,9 +11,9 @@ import { InputField } from "../InputField";
 import { getInputValue } from "../../utils/getInputValue";
 import { SubmitBtn } from "../../components/SubmitBtn";
 import { toastError, toastSuccess } from "../../utils/tostifytoast";
+import { MainContext } from "../../context/MainContext";
 
 export const AddSubcategoryForm = ({
-  allcategoryData,
   inputData,
   setInputData,
   imageUrl,
@@ -24,6 +24,7 @@ export const AddSubcategoryForm = ({
   radioBtnStatus,
   setRadioBtnStatus,
 }) => {
+  const { categoryData } = useContext(MainContext);
   const [subcategoryImage, setSubcategoryImage] = useState("");
   const [inputFieldNameError, setInputFieldNameError] = useState(false);
   const [submitBtnLoader, setSubmitBtnLoader] = useState(false);
@@ -239,9 +240,9 @@ export const AddSubcategoryForm = ({
               value={"select-parent-category"}
               label="Select Parent Category"
             />
-            {allcategoryData &&
-              allcategoryData.length > 0 &&
-              allcategoryData.map((item, index) => (
+            {categoryData &&
+              categoryData.length > 0 &&
+              categoryData.map((item, index) => (
                 <SelectBoxOptions
                   key={item?._id ?? index}
                   value={item?._id}

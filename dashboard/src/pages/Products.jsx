@@ -5,7 +5,6 @@ import { SearchInput } from "../components/SearchInput";
 import { HiPlus } from "react-icons/hi";
 import { ProductTable } from "../components/product/ProductTable";
 import { LinkBtnOne } from "../components/LinkBtnOne";
-import productsData from "../api/productsData.json";
 
 export const Products = () => {
   return (
@@ -20,7 +19,7 @@ export const Products = () => {
             </LinkBtnOne>
           </div>
         </CardTop>
-        <ProductTable data={productsData} />
+        <ProductTable />
       </MainCardContainer>
     </MainSection>
   );

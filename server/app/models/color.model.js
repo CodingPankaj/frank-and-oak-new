@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import slugify from "slugify";
 
 const colorSchema = new Schema(
   {
@@ -14,8 +15,20 @@ const colorSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    colorSlug: {
+      type: String,
+      unique: true,
+    },
   },
   { timestamps: true }
 );
+
+// generate slugs
+colorSchema.pre("save", function (next) {
+  if (!this.isModified("colorName")) next();
+
+  this.colorSlug = slugify(this.colorName, { lower: true, strict: true });
+  next();
+});
 
 export const Color = mongoose.model("Color", colorSchema);

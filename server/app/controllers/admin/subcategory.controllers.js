@@ -61,32 +61,48 @@ export const addSubcategory = asyncHandler(async (req, res) => {
     );
   }
 
-  // upload image to cloudinary
-  const subcategoryImage = await uploadToCloudinary(subcategoryImageLocalPath);
+  let subcategoryImage = null;
 
-  if (!subcategoryImage) {
-    throw new ApiError(500, "Something went wrong while uploading image");
+  try {
+    // upload image to cloudinary
+    subcategoryImage = await uploadToCloudinary(subcategoryImageLocalPath);
+
+    if (!subcategoryImage) {
+      throw new ApiError(500, "Something went wrong while uploading image");
+    }
+
+    // create new sub category
+    const subcategory = await Subcategory.create({
+      subcategoryName: subcategoryName.trim(),
+      subcategoryDescription: subcategoryDescription
+        ? subcategoryDescription.trim()
+        : "",
+      subcategoryStatus,
+      subcategoryImage: subcategoryImage.secure_url,
+      parentCategory,
+    });
+
+    if (!subcategory) {
+      throw new ApiError(
+        500,
+        "Something went wrong while creating sub category"
+      );
+    }
+
+    // return response
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, subcategory, "Subcategory added successfully")
+      );
+  } catch (error) {
+    if (subcategoryImage?.secure_url) {
+      await deleteFileFromCloudinary(subcategoryImage.secure_url);
+    }
+
+    // re throw errors to async handler
+    throw error;
   }
-
-  // create new sub category
-  const subcategory = await Subcategory.create({
-    subcategoryName: subcategoryName.trim(),
-    subcategoryDescription: subcategoryDescription
-      ? subcategoryDescription.trim()
-      : "",
-    subcategoryStatus,
-    subcategoryImage: subcategoryImage.url,
-    parentCategory,
-  });
-
-  if (!subcategory) {
-    throw new ApiError(500, "Something went wrong while creating sub category");
-  }
-
-  // return response
-  return res
-    .status(200)
-    .json(new ApiResponse(200, subcategory, "Subcategory added successfully"));
 });
 
 // update sub category
@@ -157,7 +173,7 @@ export const updateSubcategory = asyncHandler(async (req, res) => {
       throw new ApiError(500, "Something went wrong while uploading image");
     }
 
-    fieldsToUpdate.subcategoryImage = subcategoryImage.url;
+    fieldsToUpdate.subcategoryImage = subcategoryImage.secure_url;
   }
 
   // update sub category
@@ -202,11 +218,23 @@ export const deleteSubcategory = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Id is required for deleting sub category");
   }
 
+  // find sub category by id
   const subcategory = await Subcategory.findById(id);
 
   if (!subcategory) {
     throw new ApiError(404, "Sub categoy not found");
   }
+
+  // delete image
+  const deleteImage = await deleteFileFromCloudinary(
+    subcategory.subcategoryImage
+  );
+
+  if (deleteImage.result === "not found") {
+    throw new ApiError(404, "Image not found");
+  }
+
+  // delete category
 
   const deletedSubcategory = await Subcategory.findByIdAndDelete(id);
 

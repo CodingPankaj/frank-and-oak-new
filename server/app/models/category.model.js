@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import slugify from "slugify";
 
 const categorySchema = new Schema(
   {
@@ -22,8 +23,20 @@ const categorySchema = new Schema(
       ref: "Category",
       default: null,
     },
+    categorySlug: {
+      type: String,
+      unique: true,
+    },
   },
   { timestamps: true }
 );
+
+// generate slugs
+categorySchema.pre("save", function (next) {
+  if (!this.isModified("categoryName")) next();
+
+  this.categorySlug = slugify(this.categoryName, { lower: true, strict: true });
+  next();
+});
 
 export const Category = mongoose.model("Category", categorySchema);

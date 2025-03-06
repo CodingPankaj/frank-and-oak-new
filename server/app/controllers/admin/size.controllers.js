@@ -24,7 +24,10 @@ export const addSize = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Size status must be boolean value");
   }
 
-  const size = await Size.create({ sizeName, sizeStatus });
+  const size = await Size.create({
+    sizeName: sizeName.trim(),
+    sizeStatus,
+  });
 
   if (!size) {
     throw new ApiError(500, "Something went wrong while creating new size");
@@ -63,7 +66,10 @@ export const updateSize = asyncHandler(async (req, res) => {
   const updatedSize = await Size.findByIdAndUpdate(
     _id,
     {
-      $set: { sizeName, sizeStatus },
+      $set: {
+        sizeName: sizeName.trim(),
+        sizeStatus,
+      },
     },
     { new: true }
   );
@@ -85,7 +91,7 @@ export const deleteSize = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Id is required");
   }
 
-  const deletedSize = await Size.findByIdAndDelete({ id });
+  const deletedSize = await Size.findByIdAndDelete(id);
 
   if (!deletedSize) {
     throw new ApiError(404, "Size not found");
