@@ -11,6 +11,9 @@ import { ActionBtnEdit } from "../ActionBtnEdit";
 import { ActionBtnDelete } from "../ActionBtnDelete";
 import { ActionBtnContainer } from "../ActionBtnContainer";
 import { deleteSingleData } from "../../services/deleteSingleData";
+import { useState } from "react";
+import { Statusbadge } from "../StatusBadge";
+import { statusBgColorSelectort } from "../../utils/statusBgColorSelectort";
 
 export const CategoryTable = ({
   data,
@@ -81,10 +84,16 @@ const CategoryList = ({
     categoryType,
   };
 
+  const [deleteBtnLoaderStatus, setDeleteBtnLoaderStatus] = useState(false);
   // Delete category
   const handleDelete = async (id) => {
     const deleteUrl = `admin/category/delete/${id}`;
-    await deleteSingleData(deleteUrl, getCategory, "category");
+    await deleteSingleData(
+      deleteUrl,
+      getCategory,
+      "category",
+      setDeleteBtnLoaderStatus,
+    );
   };
 
   const handleEditButtonClick = () => {
@@ -100,6 +109,9 @@ const CategoryList = ({
     // change radio button status
     setRadioBtnStatus(categoryStatus);
   };
+
+  // status color for active and in active
+  const statusBgColor = statusBgColorSelectort(categoryStatus);
 
   return (
     <TableTr>
@@ -118,13 +130,18 @@ const CategoryList = ({
         <TableTextSpan>{categoryName}</TableTextSpan>
       </TableTd>
       <TableTd>
-        <TableTextSpan>{categoryStatus ? "Active" : "In Active"}</TableTextSpan>
+        <Statusbadge color={statusBgColor}>
+          {categoryStatus ? "Active" : "In Active"}
+        </Statusbadge>
       </TableTd>
 
       <TableTd>
         <ActionBtnContainer>
           <ActionBtnEdit onClick={handleEditButtonClick} />
-          <ActionBtnDelete onClick={() => handleDelete(_id)} />
+          <ActionBtnDelete
+            deleteButtonLoader={deleteBtnLoaderStatus}
+            onClick={() => handleDelete(_id)}
+          />
         </ActionBtnContainer>
       </TableTd>
     </TableTr>

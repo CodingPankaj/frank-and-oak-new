@@ -1,3 +1,5 @@
+import JoditEditor from "jodit-react";
+import DOMPurify from "dompurify";
 import { CardTop } from "../CardTop";
 import { MainCardContainer } from "../MainCardCointainer";
 import { SelectBox } from "../SelectBox";
@@ -5,8 +7,10 @@ import { SelectBoxOptions } from "../SelectBoxOptions";
 import { InputField } from "../InputField";
 import { AddProductSize } from "./AddProductSize";
 import { AddProductColor } from "./AddProductColor";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { MainContext } from "../../context/MainContext";
+import { toastError } from "../../utils/tostifytoast";
+import axios from "axios";
 
 export const AddProductBasicInfo = ({
   formData,
@@ -16,6 +20,8 @@ export const AddProductBasicInfo = ({
   selectedColors,
   setSelectedColors,
   productNameFieldError,
+  productDescription,
+  setProductDescription,
 }) => {
   return (
     <MainCardContainer>
@@ -32,7 +38,10 @@ export const AddProductBasicInfo = ({
           setInputFieldError={productNameFieldError}
           placeholder="Enter Product Name"
         />
-        <ProductCategoryAndSubCategory handleChange={handleChange} />
+        <ProductCategoryAndSubCategory
+          handleChange={handleChange}
+          formData={formData}
+        />
         <AddProductSize
           selectedSizes={selectedSizes}
           setSelectedSizes={setSelectedSizes}
@@ -43,25 +52,22 @@ export const AddProductBasicInfo = ({
         />
 
         <div className="product-input-container">
-          <span className="add-product-label">Product Short Description</span>
-
-          <textarea
-            id="product-short-description"
-            name="productShortDescription"
-            value={formData.productShortDescription}
-            onChange={handleChange}
-            placeholder="Enter Product Short Description"
-            className="product-input scrollbar h-[150px] overflow-y-auto"
-          ></textarea>
+          <span className="add-product-label">Product Description</span>
+          <ProductOverviewEditor
+            productDescription={productDescription}
+            setProductDescription={setProductDescription}
+          />
         </div>
       </div>
     </MainCardContainer>
   );
 };
 
-const ProductCategoryAndSubCategory = ({ handleChange }) => {
+const ProductCategoryAndSubCategory = ({ handleChange, formData }) => {
   const { categoryData, subcategoryData, getCategory, getSubcategory } =
     useContext(MainContext);
+
+  const [subCat, getSubCat] = useState([]);
 
   useEffect(() => {
     if (categoryData.length === 0) {
@@ -72,6 +78,13 @@ const ProductCategoryAndSubCategory = ({ handleChange }) => {
     }
   }, []);
 
+  useEffect(() => {
+    const filterData = subcategoryData.filter(
+      (item) => item?.parentCategory?._id === formData?.productParentCategory,
+    );
+    getSubCat(filterData);
+  }, [formData.productParentCategory]);
+
   return (
     <div className="grid grid-cols-2">
       {/* product category */}
@@ -80,6 +93,7 @@ const ProductCategoryAndSubCategory = ({ handleChange }) => {
         <SelectBox
           id="product-parent-category"
           name="productParentCategory"
+          value={formData.productParentCategory}
           onChange={handleChange}
           className="product-select-box"
         >
@@ -101,14 +115,15 @@ const ProductCategoryAndSubCategory = ({ handleChange }) => {
           id="product-sub-category"
           name="productSubcategory"
           onChange={handleChange}
+          value={formData.productSubcategory}
           className="product-select-box"
         >
           <SelectBoxOptions
             value="select-subcategory"
             label="Select Sub category"
           />
-          {subcategoryData &&
-            subcategoryData.map((item, index) => (
+          {subCat &&
+            subCat.map((item, index) => (
               <SelectBoxOptions
                 key={index}
                 value={item._id}
@@ -118,5 +133,38 @@ const ProductCategoryAndSubCategory = ({ handleChange }) => {
         </SelectBox>
       </div>
     </div>
+  );
+};
+
+// product description
+const ProductOverviewEditor = ({
+  productDescription,
+  setProductDescription,
+}) => {
+  const editor = useRef(null);
+
+  const config = useMemo(
+    () => ({
+      readonly: false,
+      placeholder: "Enter product description...",
+    }),
+    [],
+  );
+
+  const handleEditorChange = (newContent) => {
+    const sanitizedContent = DOMPurify.sanitize(newContent);
+    setProductDescription(sanitizedContent);
+  };
+
+  return (
+    <JoditEditor
+      ref={editor}
+      config={config}
+      value={productDescription}
+      onChange={handleEditorChange}
+      id="product-description"
+      name="productDescription"
+      placeholder="Enter Product Short Description"
+    />
   );
 };

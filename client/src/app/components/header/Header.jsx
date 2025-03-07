@@ -28,7 +28,7 @@ export const Header = () => {
           <Navbar />
           <HeaderActions />
         </div>
-        {/* <LoginModal /> */}
+        <LoginModal />
       </header>
     </>
   );

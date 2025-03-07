@@ -11,6 +11,10 @@ import { Category } from "../../models/category.model.js";
 export const getCategory = asyncHandler(async (req, res) => {
   const category = await Category.find();
 
+  if (category.length === 0) {
+    throw new ApiError(404, "No category found");
+  }
+
   return res
     .status(200)
     .json(new ApiResponse(200, category, "Category fetched successfully"));

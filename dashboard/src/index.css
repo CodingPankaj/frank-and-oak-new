@@ -164,3 +164,36 @@ body {
 .Toastify__close-button--light {
   color: var(--toastify-close-btn-color);
 }
+
+/* Jodit WYSIWYG editor */
+
+.jodit-container {
+  border-radius: 4px !important;
+  overflow: hidden;
+}
+
+.jodit-workplace {
+  min-height: 200px !important;
+}
+
+.jodit-status-bar__item-right > a {
+  display: none;
+}
+
+/* Hide increament decreament arrow from input type number in pricing section */
+
+.pricing-section input[type="number"]::-webkit-outer-spin-button,
+.pricing-section input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.pricing-section input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.pricing-section input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}

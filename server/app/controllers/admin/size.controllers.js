@@ -7,6 +7,10 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 export const getSize = asyncHandler(async (req, res) => {
   const size = await Size.find();
 
+  if (size.length === 0) {
+    throw new ApiError(404, "No size found");
+  }
+
   return res
     .status(200)
     .json(new ApiResponse(200, size, "Size fetched successfully"));
@@ -62,14 +66,21 @@ export const updateSize = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Make changes to update size");
   }
 
+  const dataToUpdate = {};
+
+  if (sizeName) {
+    dataToUpdate.sizeName = sizeName.trim();
+  }
+
+  if (sizeStatus !== size.sizeStatus) {
+    dataToUpdate.sizeStatus = sizeStatus;
+  }
+
   // update size
   const updatedSize = await Size.findByIdAndUpdate(
     _id,
     {
-      $set: {
-        sizeName: sizeName.trim(),
-        sizeStatus,
-      },
+      $set: dataToUpdate,
     },
     { new: true }
   );

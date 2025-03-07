@@ -7,10 +7,6 @@ const productSchema = new Schema(
       type: String,
       required: true,
     },
-    productShortDescription: {
-      type: String,
-      required: true,
-    },
     productDescription: {
       type: String,
       required: true,
@@ -55,6 +51,10 @@ const productSchema = new Schema(
     productSlug: {
       type: String,
       unique: true,
+    },
+    productStatus: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }

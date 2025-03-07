@@ -22,10 +22,13 @@ import { ActionBtnEdit } from "../components/ActionBtnEdit";
 import { ActionBtnDelete } from "../components/ActionBtnDelete";
 import { deleteSingleData } from "../services/deleteSingleData";
 import { MainContext } from "../context/MainContext";
+import { Statusbadge } from "../components/StatusBadge";
+import { statusBgColorSelectort } from "../utils/statusBgColorSelectort";
 
 export const Color = () => {
   // store all color
   const { colorData, getAllColors } = useContext(MainContext);
+  const [deleteBtnLoaderStatus, setDeleteBtnLoaderStatus] = useState(false);
 
   // form data
   const [formData, setFormData] = useState({
@@ -141,7 +144,12 @@ export const Color = () => {
   // handle delete color
   const handleColorDelete = async (id) => {
     const deleteUrl = `admin/color/delete/${id}`;
-    await deleteSingleData(deleteUrl, getAllColors);
+    await deleteSingleData(
+      deleteUrl,
+      getAllColors,
+      "color",
+      setDeleteBtnLoaderStatus,
+    );
   };
 
   return (
@@ -225,6 +233,7 @@ export const Color = () => {
                     setOldColorData={setOldColorData}
                     setFormData={setFormData}
                     setRadioBtnStatus={setRadioBtnStatus}
+                    deleteBtnLoaderStatus={deleteBtnLoaderStatus}
                   />
                 ))}
             </tbody>
@@ -241,6 +250,7 @@ const ColorList = ({
   setFormData,
   setOldColorData,
   setRadioBtnStatus,
+  deleteBtnLoaderStatus,
 }) => {
   const { _id, colorName, colorValue, colorStatus } = item;
 
@@ -255,6 +265,9 @@ const ColorList = ({
     setOldColorData(colorData);
     setRadioBtnStatus(colorStatus);
   };
+
+  // status color for active and in active
+  const statusBgColor = statusBgColorSelectort(colorStatus);
 
   return (
     <TableTr>
@@ -277,12 +290,17 @@ const ColorList = ({
         ></div>
       </TableTd>
       <TableTd>
-        <TableTextSpan>{colorStatus ? "Active" : "In Active"}</TableTextSpan>
+        <Statusbadge color={statusBgColor}>
+          {colorStatus ? "Active" : "In Active"}
+        </Statusbadge>
       </TableTd>
       <TableTd>
         <ActionBtnContainer>
           <ActionBtnEdit onClick={handleColorEdit} />
-          <ActionBtnDelete onClick={() => handleColorDelete(_id)} />
+          <ActionBtnDelete
+            deleteButtonLoader={deleteBtnLoaderStatus}
+            onClick={() => handleColorDelete(_id)}
+          />
         </ActionBtnContainer>
       </TableTd>
     </TableTr>

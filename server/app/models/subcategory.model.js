@@ -41,4 +41,5 @@ subcategorySchema.pre("save", function (next) {
   next();
 });
 
+////
 export const Subcategory = mongoose.model("Subcategory", subcategorySchema);

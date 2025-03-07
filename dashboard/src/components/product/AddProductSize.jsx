@@ -41,14 +41,14 @@ export const AddProductSize = ({
 const SizeButtons = ({ item, setSelectedSizes, selectedSizes }) => {
   const { _id, sizeName } = item;
 
-  const isSizeSelected = selectedSizes.includes(_id);
+  const isSizeSelected = selectedSizes.some((size) => size._id === _id);
 
   const handleClick = () => {
     setSelectedSizes((prev) => {
-      if (prev.includes(_id)) {
-        return prev.filter((id) => id !== _id);
+      if (prev.some((size) => size._id === _id)) {
+        return prev.filter((size) => size._id !== _id);
       } else {
-        return [...prev, _id];
+        return [...prev, { _id, sizeName }];
       }
     });
   };

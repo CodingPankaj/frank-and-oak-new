@@ -1,19 +1,34 @@
+import { useEffect, useState } from "react";
 import { CardTop } from "../CardTop";
 import { InputField } from "../InputField";
+import { LinkBtnTwo } from "../LinkBtnTwo";
 import { MainCardContainer } from "../MainCardCointainer";
+import { SubmitBtn } from "../SubmitBtn";
 
 export const AddProductPricing = ({
   formData,
   handleChange,
   productPriceFieldError,
+  submitBtnLoader,
 }) => {
+  const [productSalePriceFieldError, setProductSalePriceFieldError] =
+    useState(false);
+
+  useEffect(() => {
+    if (Number(formData.productSalePrice) > Number(formData.productPrice)) {
+      setProductSalePriceFieldError(true);
+    } else {
+      setProductSalePriceFieldError(false);
+    }
+  }, [formData.productSalePrice]);
+
   return (
     <MainCardContainer>
       <CardTop heading="Pricing" headingStyle="text-sm" />
-      <div className="pb-3 pt-2">
+      <div className="pricing-section pb-3 pt-2">
         <InputField
           label="Product Price"
-          type="text"
+          type="number"
           id="product-price"
           name="productPrice"
           value={formData.productPrice}
@@ -25,79 +40,22 @@ export const AddProductPricing = ({
 
         <InputField
           label="Product Sale Price"
-          type="text"
+          type="number"
           id="product-sale-price"
           name="productSalePrice"
           value={formData.productSalePrice}
           onChange={handleChange}
-          setInputFieldError={false}
+          errorMessage="Product Sale Price Should be less than product price"
+          setInputFieldError={productSalePriceFieldError}
           placeholder="Enter Product Sale Price"
           className="product-input"
         />
 
-        {/* <AddProductDiscount /> */}
-
-        {/* <div className="product-input-container">
-          <label htmlFor="product-price" className="add-product-label">
-            Discount
-          </label>
-          <input
-            type="text"
-            id="product-discount"
-            placeholder="Enter Discount Rates"
-            className="product-input"
-          />
+        <div className="mt-4 flex items-center justify-center gap-4">
+          <LinkBtnTwo>Save Draft</LinkBtnTwo>
+          <SubmitBtn label="Add Product" submitBtnLoader={submitBtnLoader} />
         </div>
-        <div className="product-input-container">
-          <label htmlFor="product-price" className="add-product-label">
-            Discounted Price
-          </label>
-          <input
-            type="text"
-            id="discounted-price"
-            placeholder="Discounted Price"
-            className="product-input"
-            disabled
-          />
-        </div> */}
       </div>
     </MainCardContainer>
-  );
-};
-
-const AddProductDiscount = () => {
-  return (
-    <div className="product-input-container">
-      <span htmlFor="discount-type" className="add-product-label">
-        Discount Type
-      </span>
-      <div className="radio-container">
-        <span className="add-product-label">No Discount</span>
-        <input
-          type="radio"
-          name="discount-type"
-          id="no-discount"
-          className="input-radio"
-        />
-      </div>
-      <div className="radio-container">
-        <span className="add-product-label">Percentage %</span>
-        <input
-          type="radio"
-          name="discount-type"
-          id="percentage-discount"
-          className="input-radio"
-        />
-      </div>
-      <div className="radio-container">
-        <span className="add-product-label">Fixed Discount</span>
-        <input
-          type="radio"
-          name="discount-type"
-          id="fixed-discount"
-          className="input-radio"
-        />
-      </div>
-    </div>
   );
 };

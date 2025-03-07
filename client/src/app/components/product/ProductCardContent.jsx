@@ -16,7 +16,7 @@ export const ProductCardContent = () => {
       </div>
       <div>
         <Image
-          src={"images/heart.svg"}
+          src={"/images/heart.svg"}
           height={16}
           width={16}
           className="size-[14px] md:size-4"

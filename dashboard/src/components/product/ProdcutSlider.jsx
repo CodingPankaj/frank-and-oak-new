@@ -10,7 +10,7 @@ export const ProductSlider = ({ productImages }) => {
     if (!swiperRef.current) {
       // initialize swiper instance only once
       swiperRef.current = new Swiper(".swiper", {
-        loop: productImages.length > 0,
+        loop: false,
 
         slidesPerView: 1,
         pagination: {

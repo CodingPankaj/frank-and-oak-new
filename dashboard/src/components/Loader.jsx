@@ -6,7 +6,7 @@ export const Loader = ({
     <div className={className}>
       <svg
         aria-hidden="true"
-        className={`animate-spin text-gray-200 dark:text-gray-600 ${loaderStyle}`}
+        className={`animate-spin text-red-500 dark:text-gray-600 ${loaderStyle}`}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

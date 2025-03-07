@@ -74,9 +74,11 @@ export const uploadMultipleImageToCloudinary = async (
         });
 
         imageUrls.push(res.secure_url);
+        fs.unlinkSync(localFilePath);
       } catch (error) {
         console.error(`Error uploading file ${localFilePath}:`, error);
         imageUrls.push(null);
+        fs.unlinkSync(localFilePath);
       }
     }
 

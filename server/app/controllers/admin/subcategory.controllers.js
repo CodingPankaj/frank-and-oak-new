@@ -10,6 +10,7 @@ import { Category } from "../../models/category.model.js";
 
 // get sub category
 export const getSubcategory = asyncHandler(async (req, res) => {
+  // check if parent id is present
   const subcategory = await Subcategory.find().populate(
     "parentCategory",
     "categoryName"

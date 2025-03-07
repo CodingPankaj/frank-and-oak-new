@@ -1,14 +1,13 @@
-import Image from "next/image";
 import { ProductCardContent } from "./ProductCardContent";
 import { ProductCardColor } from "./ProductCardColor";
 import { ProductCardImageSlider } from "./ProductCardImageSlider";
 
-export const ProductCard = () => {
+export const ProductCard = ({ product }) => {
   return (
     <div className="group">
-      <ProductCardImageSlider />
-      <ProductCardContent />
-      <ProductCardColor />
+      <ProductCardImageSlider product={product} />
+      <ProductCardContent product={product} />
+      <ProductCardColor product={product} />
     </div>
   );
 };

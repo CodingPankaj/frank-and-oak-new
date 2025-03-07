@@ -72,25 +72,28 @@ const ProductList = ({ product, getAllProducts }) => {
     productColors,
     productPrice,
     productSalePrice,
+    productStatus,
   } = product;
 
-  const publishedStatus = (status) => {
-    if (status.toLowerCase() === "unpublished") return "250, 117, 22";
-    if (status.toLowerCase() === "published") return "114, 92, 255";
-    if (status.toLowerCase() === "draft") return "20, 184, 166";
-  };
+  const [deleteBtnLoaderStatus, setDeleteBtnLoaderStatus] = useState(false);
+
+  const publishedstatusColor = productStatus ? "114, 92, 255" : "250, 117, 22";
 
   // Delete category
   const handleDelete = async (id) => {
     const deleteUrl = `admin/product/delete/${id}`;
-    await deleteSingleData(deleteUrl, getAllProducts, "product");
+    await deleteSingleData(
+      deleteUrl,
+      getAllProducts,
+      "product",
+      setDeleteBtnLoaderStatus,
+    );
   };
 
   const formattedPrice = currencyFormatter(productPrice);
   const formattedSalePrice = productSalePrice
     ? currencyFormatter(productSalePrice)
     : "N/A";
-  // const publishedstatusColor = publishedStatus(status);
 
   return (
     <TableTr>
@@ -113,9 +116,12 @@ const ProductList = ({ product, getAllProducts }) => {
       <TableTd>
         <TableTextSpan>
           {productSizes &&
-            productSizes.length > 1 &&
+            productSizes.length > 0 &&
             productSizes.map((item) => (
-              <span key={item._id} className="mr-2">
+              <span
+                key={item._id}
+                className="mr-2 rounded border border-border-color px-2 py-1"
+              >
                 {item.sizeName}
               </span>
             ))}
@@ -124,7 +130,7 @@ const ProductList = ({ product, getAllProducts }) => {
       <TableTd>
         <div className="flex gap-2">
           {productColors &&
-            productColors.length > 1 &&
+            productColors.length > 0 &&
             productColors.map((item) => (
               <div
                 key={item._id}
@@ -143,13 +149,18 @@ const ProductList = ({ product, getAllProducts }) => {
         </TableTextSpan>
       </TableTd>
       <TableTd>
-        {/* <Statusbadge color={publishedstatusColor}>{}</Statusbadge> */}
+        <Statusbadge color={publishedstatusColor}>
+          {productStatus ? "Active" : "In Active"}
+        </Statusbadge>
       </TableTd>
-      <TableTd>
+      {/* <TableTd>
         <TableTextSpan>{}</TableTextSpan>
-      </TableTd>
+      </TableTd> */}
       <TableTd>
-        <ActionBtnDelete onClick={() => handleDelete(_id)} />
+        <ActionBtnDelete
+          deleteButtonLoader={deleteBtnLoaderStatus}
+          onClick={() => handleDelete(_id)}
+        />
       </TableTd>
     </TableTr>
   );

@@ -58,6 +58,7 @@ const DisplayUploadedPic = ({ src = "/images/1.jpg", handleClick }) => {
         className="h-full w-full object-cover"
       />
       <button
+        type="button"
         onClick={() => handleClick(src)}
         className="absolute right-1 top-1 flex items-center justify-center rounded-full bg-red-500 text-sm text-white lg:size-4 xl:size-5"
       >

@@ -8,7 +8,7 @@ export const HeaderActions = () => {
         <li>
           <button className="min-w-[22px]">
             <Image
-              src={"images/search.svg"}
+              src={"/images/search.svg"}
               height={22}
               width={22}
               className="size-[22px]"
@@ -19,7 +19,7 @@ export const HeaderActions = () => {
         <li className="group relative">
           <button className="min-w-[22px] cursor-pointer">
             <Image
-              src={"images/user.svg"}
+              src={"/images/user.svg"}
               height={22}
               width={22}
               className="size-[22px]"
@@ -32,7 +32,7 @@ export const HeaderActions = () => {
         <li>
           <button className="min-w-[22px]">
             <Image
-              src={"images/heart.svg"}
+              src={"/images/heart.svg"}
               height={22}
               width={22}
               className="size-[22px]"
@@ -43,7 +43,7 @@ export const HeaderActions = () => {
         <li>
           <button className="relative min-w-[22px]">
             <Image
-              src={"images/cart.svg"}
+              src={"/images/cart.svg"}
               height={22}
               width={22}
               className="size-[22px]"

@@ -7,6 +7,10 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 export const getColor = asyncHandler(async (req, res) => {
   const color = await Color.find();
 
+  if (color.length === 0) {
+    throw new ApiError(404, "No color found");
+  }
+
   return res
     .status(200)
     .json(new ApiResponse(200, color, "Size fetched successfully"));
@@ -73,15 +77,25 @@ export const updateColor = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Make changes to update size");
   }
 
+  const dataToUpdata = {};
+
+  if (colorName) {
+    dataToUpdata.colorName = colorName.trim();
+  }
+
+  if (colorValue) {
+    dataToUpdata.colorValue = colorValue.trim();
+  }
+
+  if (colorStatus !== color.colorStatus) {
+    dataToUpdata.colorStatus = colorStatus;
+  }
+
   // update color
   const updatedColor = await Color.findByIdAndUpdate(
     _id,
     {
-      $set: {
-        colorName: colorName.trim(),
-        colorValue: colorValue.trim(),
-        colorStatus,
-      },
+      $set: dataToUpdata,
     },
     { new: true }
   );

@@ -11,6 +11,9 @@ import { ActionBtnEdit } from "../ActionBtnEdit";
 import { ActionBtnDelete } from "../ActionBtnDelete";
 import { ActionBtnContainer } from "../ActionBtnContainer";
 import { deleteSingleData } from "../../services/deleteSingleData";
+import { useState } from "react";
+import { Statusbadge } from "../StatusBadge";
+import { statusBgColorSelectort } from "../../utils/statusBgColorSelectort";
 
 export const SubcategoryTable = ({
   subcategoryData,
@@ -73,7 +76,7 @@ const CategoryList = ({
     subcategoryDescription,
     parentCategory,
   } = item;
-
+  const [deleteBtnLoaderStatus, setDeleteBtnLoaderStatus] = useState(false);
   // sub category data made from item
   const catData = {
     _id,
@@ -86,7 +89,12 @@ const CategoryList = ({
   // // Delete sub category
   const handleDelete = async (id) => {
     const deleteUrl = `admin/subcategory/delete/${id}`;
-    await deleteSingleData(deleteUrl, getSubcategory, "Sub category");
+    await deleteSingleData(
+      deleteUrl,
+      getSubcategory,
+      "Sub category",
+      setDeleteBtnLoaderStatus,
+    );
   };
 
   const handleEditButtonClick = () => {
@@ -102,6 +110,9 @@ const CategoryList = ({
     // update radio button status
     setRadioBtnStatus(subcategoryStatus);
   };
+
+  // status color for active and in active
+  const statusBgColor = statusBgColorSelectort(subcategoryStatus);
 
   return (
     <TableTr>
@@ -128,14 +139,19 @@ const CategoryList = ({
 
       <TableTd>
         <TableTextSpan>
-          {subcategoryStatus ? "Active" : "In Active"}
+          <Statusbadge color={statusBgColor}>
+            {subcategoryStatus ? "Active" : "In Active"}
+          </Statusbadge>
         </TableTextSpan>
       </TableTd>
 
       <TableTd>
         <ActionBtnContainer>
           <ActionBtnEdit onClick={handleEditButtonClick} />
-          <ActionBtnDelete onClick={() => handleDelete(_id)} />
+          <ActionBtnDelete
+            deleteButtonLoader={deleteBtnLoaderStatus}
+            onClick={() => handleDelete(_id)}
+          />
         </ActionBtnContainer>
       </TableTd>
     </TableTr>

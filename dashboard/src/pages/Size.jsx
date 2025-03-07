@@ -22,10 +22,13 @@ import { InputField } from "../components/InputField";
 import { getInputValue } from "../utils/getInputValue";
 import { deleteSingleData } from "../services/deleteSingleData";
 import { MainContext } from "../context/MainContext";
+import { Statusbadge } from "../components/StatusBadge";
+import { statusBgColorSelectort } from "../utils/statusBgColorSelectort";
 
 export const Size = () => {
   const { sizeData, getAllSizes } = useContext(MainContext);
   const [loading, setLoading] = useState(false);
+  const [deleteBtnLoaderStatus, setDeleteBtnLoaderStatus] = useState(false);
   const [radioBtnStatus, setRadioBtnStatus] = useState(true);
   const [inputFieldNameError, setInputFieldNameError] = useState(false);
   const [oldFormData, setOldFormData] = useState({});
@@ -145,7 +148,12 @@ export const Size = () => {
   // Delete Size
   const handleSizeDelete = async (id) => {
     const deleteUrl = `admin/size/delete/${id}`;
-    await deleteSingleData(deleteUrl, getAllSizes);
+    await deleteSingleData(
+      deleteUrl,
+      getAllSizes,
+      "size",
+      setDeleteBtnLoaderStatus,
+    );
   };
 
   return (
@@ -225,6 +233,7 @@ export const Size = () => {
                     setFormData={setFormData}
                     setRadioBtnStatus={setRadioBtnStatus}
                     setOldFormData={setOldFormData}
+                    deleteBtnLoaderStatus={deleteBtnLoaderStatus}
                   />
                 ))}
               </tbody>
@@ -245,6 +254,7 @@ const SizeList = ({
   setFormData,
   setRadioBtnStatus,
   setOldFormData,
+  deleteBtnLoaderStatus,
 }) => {
   const sizedata = {
     sizeName,
@@ -261,6 +271,9 @@ const SizeList = ({
     setRadioBtnStatus(sizeStatus);
   };
 
+  // status color for active and in active
+  const statusBgColor = statusBgColorSelectort(sizeStatus);
+
   return (
     <TableTr>
       <TableTd>
@@ -273,12 +286,17 @@ const SizeList = ({
         <TableTextSpan>{sizeName}</TableTextSpan>
       </TableTd>
       <TableTd>
-        <TableTextSpan>{sizeStatus ? "Active" : "In Active"}</TableTextSpan>
+        <Statusbadge color={statusBgColor}>
+          {sizeStatus ? "Active" : "In Active"}
+        </Statusbadge>
       </TableTd>
       <TableTd>
         <ActionBtnContainer>
           <ActionBtnEdit onClick={handleSizeEdit} />
-          <ActionBtnDelete onClick={() => handleSizeDelete(_id)} />
+          <ActionBtnDelete
+            deleteButtonLoader={deleteBtnLoaderStatus}
+            onClick={() => handleSizeDelete(_id)}
+          />
         </ActionBtnContainer>
       </TableTd>
     </TableTr>

@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
 import { ProductCardQuickAdd } from "./ProductCartQuickAdd";
+import Link from "next/link";
 
-export const ProductCardImageSlider = () => {
+export const ProductCardImageSlider = ({ product }) => {
   const [swiperInstance, setSwiperInstance] = useState(null);
 
   const productImages = [
@@ -64,11 +65,13 @@ const ProductSlides = ({ src }) => {
   return (
     <div className="swiper-slide">
       <figure className="hidden group-hover/image:block">
-        <img
-          src={src}
-          alt="thumbnail"
-          className="h-full w-full object-cover object-[top_center]"
-        />
+        <Link href={"/product/new"}>
+          <img
+            src={src}
+            alt="thumbnail"
+            className="h-full w-full object-cover object-[top_center]"
+          />
+        </Link>
       </figure>
     </div>
   );

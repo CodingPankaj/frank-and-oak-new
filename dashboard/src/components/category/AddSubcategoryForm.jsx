@@ -234,6 +234,7 @@ export const AddSubcategoryForm = ({
             id="parent-category"
             className="product-select-box"
             name="parentCategory"
+            value={inputData.parentCategory}
             onChange={handleChange}
           >
             <SelectBoxOptions

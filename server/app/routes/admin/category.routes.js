@@ -11,7 +11,7 @@ import { upload } from "../../middlewares/multer.middleware.js";
 export const categoryRouter = Router();
 
 // get category
-categoryRouter.route("/view").get(getCategory);
+categoryRouter.route("/view/:id?").get(getCategory);
 
 // add category
 categoryRouter

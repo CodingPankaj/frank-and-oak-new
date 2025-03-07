@@ -16,6 +16,10 @@ export const getProduct = asyncHandler(async (req, res) => {
     .populate("productParentCategory", "categoryName")
     .populate("productSubcategory", "subcategoryName");
 
+  if (products.length === 0) {
+    throw new ApiError(404, "No products found");
+  }
+
   return res
     .status(200)
     .json(new ApiResponse(200, products, "Products fetched successfully"));
@@ -25,7 +29,6 @@ export const addProduct = asyncHandler(async (req, res) => {
   const {
     productName,
     productDescription,
-    productShortDescription,
     productPrice,
     productSalePrice,
     productParentCategory,
@@ -82,11 +85,9 @@ export const addProduct = asyncHandler(async (req, res) => {
 
   // product files
   const productFiles = req.files?.productImages;
-  console.log(productFiles);
+
   const productImageLocalFilePath = productFiles.map((file) => file.path);
   let productImages;
-
-  console.log("line 85");
 
   try {
     // upload images to cloudinary
@@ -102,7 +103,6 @@ export const addProduct = asyncHandler(async (req, res) => {
     const product = await Product.create({
       productName: productName.trim(),
       productDescription: productDescription.trim() ?? "",
-      productShortDescription: productShortDescription.trim() ?? "",
       productPrice: newProductPrice,
       productSalePrice: newProductSalePrice ?? newProductPrice,
       productParentCategory,
@@ -111,8 +111,6 @@ export const addProduct = asyncHandler(async (req, res) => {
       productColors,
       productImages,
     });
-
-    console.log(product);
 
     if (!product) {
       throw new ApiError(400, "Something went wrong while creating product");

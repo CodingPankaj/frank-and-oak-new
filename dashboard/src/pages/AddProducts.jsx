@@ -1,14 +1,12 @@
 import { MainSection } from "../components/MainSection";
 import { MainCardContainer } from "../components/MainCardCointainer";
 import { CardTop } from "../components/CardTop";
-import { LinkBtnOne } from "../components/LinkBtnOne";
 import { LinkBtnTwo } from "../components/LinkBtnTwo";
 import { AddProductPics } from "../components/product/AddProductPics";
 import { AddProductBasicInfo } from "../components/product/AddProductBasicInfo";
 import { AddProductPricing } from "../components/product/AddProductPricing";
-import { AddProductSpecification } from "../components/product/AddProductSpecification";
 import { ProductPreview } from "../components/product/ProductPreview";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getInputValue } from "../utils/getInputValue";
 import { toastError, toastSuccess } from "../utils/tostifytoast";
 import axios from "axios";
@@ -18,8 +16,6 @@ export const AddProducts = () => {
   const emptyData = {
     _id: "",
     productName: "",
-    productShortDescription: "",
-    productDescription: "",
     productPrice: "",
     productSalePrice: "",
     productParentCategory: "",
@@ -31,19 +27,12 @@ export const AddProducts = () => {
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
   const [productImages, setProductImages] = useState([]);
+  const [productDescription, setProductDescription] = useState("");
 
   // errors
   const [productNameFieldError, setProductNameFieldError] = useState(false);
   const [productPriceFieldError, setProductPriceFieldError] = useState(false);
   const [submitBtnLoader, setSubmitBtnLoader] = useState(false);
-
-  // useEffect(() => {
-  //   console.log(formData);
-  // }, [formData]);
-
-  // useEffect(() => {
-  //   console.log(selectedSizes);
-  // }, [selectedSizes]);
 
   // handle change
   const handleChange = (e) => {
@@ -56,14 +45,13 @@ export const AddProducts = () => {
     const {
       _id,
       productName,
-      productShortDescription,
-      productDescription,
       productPrice,
       productSalePrice,
       productParentCategory,
       productSubcategory,
     } = formData;
 
+    // return console.log(selectedSizes);
     if (!productName && productName.trim() === "") {
       setProductNameFieldError(true);
       return toastError("Product Name is Required");
@@ -72,10 +60,6 @@ export const AddProducts = () => {
     if (!productPrice || productPrice.trim() === "") {
       setProductPriceFieldError(true);
       return toastError("Product Price is Required");
-    }
-
-    if (!productShortDescription || productShortDescription.trim() === "") {
-      return toastError("Product Short Description is Required");
     }
 
     if (!productDescription || productDescription.trim() === "") {
@@ -113,10 +97,6 @@ export const AddProducts = () => {
     const newFormData = new FormData();
 
     newFormData.append("productName", productName.trim());
-    newFormData.append(
-      "productShortDescription",
-      productShortDescription.trim(),
-    );
     newFormData.append("productDescription", productDescription.trim());
     newFormData.append("productParentCategory", productParentCategory);
     newFormData.append("productSubcategory", productSubcategory);
@@ -125,23 +105,23 @@ export const AddProducts = () => {
 
     // Append sizes one by one
     selectedSizes.forEach((size) => {
-      newFormData.append("productSizes[]", size); // Ensure your backend expects "productSizes[]" or similar.
+      newFormData.append("productSizes[]", size._id);
     });
 
     // Append colors one by one
     selectedColors.forEach((color) => {
-      newFormData.append("productColors[]", color); // Ensure your backend expects "productColors[]".
+      newFormData.append("productColors[]", color._id);
     });
 
     // Append images one by one
     productImages.forEach((image, index) => {
-      newFormData.append("productImages", image); // productImages can be processed as array of files on backend.
+      newFormData.append("productImages", image);
     });
 
     // end point
     const endpoint = "admin/product/add";
 
-    // disable button
+    // disble button
     setSubmitBtnLoader(true);
 
     try {
@@ -156,20 +136,19 @@ export const AddProducts = () => {
         },
       );
 
-      console.log(res);
-      setFormData(emptyData);
-      setSelectedSizes([]);
-      setSelectedColors([]);
-      setProductImages([]);
-      setSubmitBtnLoader(false);
+      if (res.status === 200) {
+        setFormData(emptyData);
+        setProductDescription("");
+        setSelectedSizes([]);
+        setSelectedColors([]);
+        setProductImages([]);
+        setSubmitBtnLoader(false);
+        toastSuccess("Product Added Successfully");
+      }
     } catch (error) {
-      console.log(error);
-
       setSubmitBtnLoader(false);
       toastError("Failed to add Product");
     }
-
-    console.log(newFormData);
   };
   return (
     <MainSection>
@@ -186,6 +165,8 @@ export const AddProducts = () => {
           <AddProductBasicInfo
             formData={formData}
             setFormData={setFormData}
+            productDescription={productDescription}
+            setProductDescription={setProductDescription}
             handleChange={handleChange}
             selectedSizes={selectedSizes}
             setSelectedSizes={setSelectedSizes}
@@ -201,10 +182,6 @@ export const AddProducts = () => {
             formData={formData}
             handleChange={handleChange}
             productPriceFieldError={productPriceFieldError}
-          />
-          <AddProductSpecification
-            formData={formData}
-            handleChange={handleChange}
             submitBtnLoader={submitBtnLoader}
           />
         </form>
@@ -214,6 +191,7 @@ export const AddProducts = () => {
             productImages={productImages}
             selectedColors={selectedColors}
             selectedSizes={selectedSizes}
+            productDescription={productDescription}
           />
         </div>
       </div>
