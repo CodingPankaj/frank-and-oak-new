@@ -9,12 +9,14 @@ const adminSchema = new Schema(
       required: true,
       trim: true,
       lowercase: true,
+      index: true,
     },
     email: {
       type: String,
       required: true,
       trim: true,
       lowercase: true,
+      index: true,
     },
     password: {
       type: String,

@@ -25,21 +25,28 @@ const subcategorySchema = new Schema(
     subcategorySlug: {
       type: String,
       unique: true,
+      index: true,
     },
   },
   { timestamps: true }
 );
 
 // generate slugs
-subcategorySchema.pre("save", function (next) {
-  if (!this.isModified("sizeName")) next();
+subcategorySchema.pre("save", async function (next) {
+  if (!this.isModified("subcategoryName")) next();
 
-  this.subcategorySlug = slugify(this.subcategoryName, {
-    lower: true,
-    strict: true,
-  });
+  let baseSlug = slugify(this.subcategoryName, { lower: true, strict: true });
+
+  let newSlug = baseSlug;
+  let counter = 1;
+
+  while (await this.constructor.exists({ subcategorySlug: newSlug })) {
+    newSlug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+
+  this.subcategorySlug = newSlug;
   next();
 });
 
-////
 export const Subcategory = mongoose.model("Subcategory", subcategorySchema);

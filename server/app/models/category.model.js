@@ -26,16 +26,26 @@ const categorySchema = new Schema(
     categorySlug: {
       type: String,
       unique: true,
+      index: true,
     },
   },
   { timestamps: true }
 );
 
 // generate slugs
-categorySchema.pre("save", function (next) {
+categorySchema.pre("save", async function (next) {
   if (!this.isModified("categoryName")) next();
 
-  this.categorySlug = slugify(this.categoryName, { lower: true, strict: true });
+  let baseSlug = slugify(this.categoryName, { lower: true, strict: true });
+  let newSlug = baseSlug;
+  let counter = 1;
+
+  while (await this.constructor.exists({ categorySlug: newSlug })) {
+    newSlug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+
+  this.categorySlug == newSlug;
   next();
 });
 

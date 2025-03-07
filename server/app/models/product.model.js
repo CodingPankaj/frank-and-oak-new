@@ -51,6 +51,7 @@ const productSchema = new Schema(
     productSlug: {
       type: String,
       unique: true,
+      index: true,
     },
     productStatus: {
       type: Boolean,
@@ -61,10 +62,19 @@ const productSchema = new Schema(
 );
 
 // generate slugs
-productSchema.pre("save", function (next) {
+productSchema.pre("save", async function (next) {
   if (!this.isModified("sizeName")) next();
 
-  this.productSlug = slugify(this.productName, { lower: true, strict: true });
+  let baseSlug = slugify(this.productName, { lower: true, strict: true });
+  let newSlug = baseSlug;
+  let counter = 1;
+
+  while (await this.constructor.exists({ productSlug: newSlug })) {
+    newSlug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+
+  this.productSlug = newSlug;
   next();
 });
 
